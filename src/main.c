@@ -18,9 +18,5 @@ int main() {
   // uncomment and run "make v" to see how valgrind detects memory leaks
   // createaleak();
 
-  return 0;
-
-
-  hola
-  
+  return 0;  
 }
