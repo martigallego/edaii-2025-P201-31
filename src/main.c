@@ -15,7 +15,7 @@ int main() {
   // how to import and call a function
   printf("Factorial of 4 is %d\n", fact(4));
 
-  // uncomment and run "make v" to see how valgrind detects memory leaks
+  // uncomment and run "make v" to see how valgrind detects memory leaks hola
   // createaleak();
 
   return 0;  
