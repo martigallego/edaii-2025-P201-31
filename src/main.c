@@ -18,5 +18,15 @@ int main() {
   // uncomment and run "make v" to see how valgrind detects memory leaks hola
   // createaleak();
 
+
+//LAB 1 a)
+typedef struct{
+  int documentId; // ID del document de destinació
+  char* linkText; // text de l'enllaç
+  struct Link* next; // punter al següent enllaç
+}Link;
+
+
+
   return 0;  
 }
