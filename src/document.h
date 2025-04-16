@@ -3,7 +3,7 @@ typedef struct Links{
     int documentId; // ID del document de destinació
     char* title;
     char* linkText; // text de l'enllaç
-    struct Link* next; // punter al següent enllaç
+    struct Links* next; // punter al següent enllaç
   }Links;
 
   //estructura de document
