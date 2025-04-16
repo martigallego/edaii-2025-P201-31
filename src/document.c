@@ -9,6 +9,17 @@ Links *LinksInit() {
     return NULL; // Inicialitza la llista d'enllaços com a NULL
 }
 
+//alliberar links --> text i estructura
+void freeLinks(Links* link) {
+    while (link) {
+        Links* temp = link;
+        link = link->next;
+        free(temp->linkText); // Allibera el text de l'enllaç
+        free(temp); // Allibera l'estructura de l'enllaç
+    }
+}
+
+
 //funcio per alliberar el document sencer, titol, cos, enllacos i estructura
 void freeDocument(Document* document) {
     if (document) {

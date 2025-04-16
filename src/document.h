@@ -19,3 +19,4 @@ Document* document_desserialize(char* path);    // declarar de la funció docume
 void freeDocument(Document* document); // declarar de freeDocument
 void freeLinks(Links* link); // declarar de freeLinks
 
+
