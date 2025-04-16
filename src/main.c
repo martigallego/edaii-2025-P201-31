@@ -17,7 +17,7 @@ int main() {
   //printf("Factorial of 4 is %d\n", fact(4));
 
   // uncomment and run "make v" to see how valgrind detects memory leaks hola
-  createaleak();
+  // createaleak();
 
   Document* docu = document_desserialize("./datasets/wikipedia12/2.txt");
   if (docu) {
