@@ -11,10 +11,10 @@ void createaleak() {
 }
 
 int main() {
-  printf("*****************\nWelcome to EDA 2!\n*****************\n");
+  //printf("*****************\nWelcome to EDA 2!\n*****************\n");
 
   // how to import and call a function
-  printf("Factorial of 4 is %d\n", fact(4));
+  //printf("Factorial of 4 is %d\n", fact(4));
 
   // uncomment and run "make v" to see how valgrind detects memory leaks hola
   createaleak();
