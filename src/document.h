@@ -1,7 +1,7 @@
 //LAB 1 a)
 typedef struct Links{
     int documentId; // ID del document de destinació
-    char* title;
+    char* title;  
     char* linkText; // text de l'enllaç
     struct Links* next; // punter al següent enllaç
   }Links;
@@ -10,10 +10,12 @@ typedef struct Links{
 
 typedef struct Document {
   int id; // ID del document
-  char* title; // Títol del document
-  char* body; // Cos del document
-  Links* links; // Llista d'enllaços
+  char* title; // títol del document
+  char* body; // cos del document
+  Links* links; // llista d'enllaços
 } Document;
 
-Document* document_desserialize(char* path);    // Declarar de la funció
+Document* document_desserialize(char* path);    // declarar de la funció document_desserialize
+void freeDocument(Document* document); // declarar de freeDocument
+void freeLinks(Links* link); // declarar de freeLinks
 

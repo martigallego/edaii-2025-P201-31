@@ -9,11 +9,21 @@ Links *LinksInit() {
     return NULL; // Inicialitza la llista d'enllaços com a NULL
 }
 
+//funcio per alliberar el document sencer, titol, cos, enllacos i estructura
+void freeDocument(Document* document) {
+    if (document) {
+        free(document->title); // allibera el títol
+        free(document->body); // allibera el cos
+        freeLinks(document->links); // allibera els enllaços
+        free(document); // allibera l'estructura del document
+    }
+}
+
 void LinksAdd(Links **head, int documentId, char *linkText) {
     Links *newLink = (Links *)malloc(sizeof(Links));
     newLink->documentId = documentId;
     newLink->linkText = strdup(linkText);
-    newLink->next = *head; // Afegeix al principi de la llista
+    newLink->next = *head; // afegeix al principi de la llista
     *head = newLink;
 }
 
@@ -38,13 +48,13 @@ Document *document_desserialize(char *path) {
     document->id = atoi(buffer);
 
     // parse title
-    bufferIdx = 0; // Reset buffer index for title
+    bufferIdx = 0; //reset buffer index for title
     while ((ch = fgetc(f)) != '\n') {
         assert(bufferIdx < bufferSize);
         buffer[bufferIdx++] = ch;
     }
     buffer[bufferIdx++] = '\0';
-    document->title = strdup(buffer); // Assign title
+    document->title = strdup(buffer); //assignar titol
 
     // parse body
     char linkBuffer[64];
@@ -64,8 +74,8 @@ Document *document_desserialize(char *path) {
                 linkBuffer[linkBufferIdx++] = '\0';
                 int linkId = atoi(linkBuffer);
 
-                // Afegeix l'enllaç a la llista
-                LinksAdd(&links, linkId, buffer + bufferIdx - linkBufferIdx - strlen(linkBuffer) - 2); // Afegeix el text de l'enllaç
+                //afegeix l'enllaç a la llista
+                LinksAdd(&links, linkId, buffer + bufferIdx - linkBufferIdx - strlen(linkBuffer) - 2); //afegeix el text de l'enllaç
 
                 linkBufferIdx = 0;
             } else if (ch != '(') { // skip first parenthesis of the link
@@ -74,16 +84,16 @@ Document *document_desserialize(char *path) {
             } 
         } else if (ch == '[') { // found beginning of link text
             parsingLink = true;
-            linkBufferIdx = 0; // Reset link buffer index
+            linkBufferIdx = 0; //reset link buffer index
         }
     }
     buffer[bufferIdx++] = '\0';
     
-    // Assigna el cos a l'estructura Document
+    //assigna el cos a l'estructura Document
     document->body = (char *)malloc(sizeof(char) * (bufferIdx + 1)); // +1 per al caràcter null
     strcpy(document->body, buffer);
-    document->links = links; // Assigna la llista d'enllaços al document
+    document->links = links; // assigna la llista d'enllaços al document
 
-    fclose(f); // Tanca el fitxer
-    return document; // Retorna el document
+    fclose(f); // tanca el fitxer
+    return document; // retorna el document
 }
