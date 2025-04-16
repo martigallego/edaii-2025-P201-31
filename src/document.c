@@ -1,6 +1,8 @@
+#include "document.h"
 #include <stdio.h>
-#include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
+#include <assert.h>
 
 //Funcio per llegir un document del dataset i guardr tota la informacio
 
