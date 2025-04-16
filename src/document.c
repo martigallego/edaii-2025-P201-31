@@ -3,13 +3,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <stdbool.h>
 
 Links *LinksInit() {
     return NULL; // Inicialitza la llista d'enllaços com a NULL
 }
 
 void LinksAdd(Links **head, int documentId, char *linkText) {
-    Link *newLink = (Link *)malloc(sizeof(Link));
+    Links *newLink = (Links *)malloc(sizeof(Links));
     newLink->documentId = documentId;
     newLink->linkText = strdup(linkText);
     newLink->next = *head; // Afegeix al principi de la llista

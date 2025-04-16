@@ -26,7 +26,7 @@ int main() {
     printf("Body: %s\n", docu->body);
     
     // Imprimeix els enllaços
-    Link* current = docu->links;
+    Links* current = docu->links;
     while (current) {
         printf("Link ID: %d, Text: %s\n", current->documentId, current->linkText);
         current = current->next;
