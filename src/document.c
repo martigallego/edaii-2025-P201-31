@@ -11,11 +11,11 @@ Links *LinksInit() {
 
 //alliberar links --> text i estructura
 void freeLinks(Links* link) {
-    while (link) {
-        Links* temp = link;
-        link = link->next;
-        free(temp->linkText); // Allibera el text de l'enllaç
-        free(temp); // Allibera l'estructura de l'enllaç
+    while (link != NULL){ //comprova que el link no es null
+        Links* temp = link; //node actual
+        link = link->next;  //passa al node seguent
+        free(temp->linkText); //allibera el text de l'enllaç
+        free(temp); //allibera l'estructura de l'enllaç
     }
 }
 
@@ -108,8 +108,7 @@ Document *document_desserialize(char *path) {
     document->links = links; //assginar els links al document
     fclose(f); //tancar el arxiu
     return document; //retornar el document 
-
-
+}
 
 
 
