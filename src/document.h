@@ -1,5 +1,5 @@
 //LAB 1 a)
-typedef struct Links{
+typedef struct{
     int documentId; // ID del document de destinació
     char* title;  
     char* linkText; // text de l'enllaç
@@ -8,7 +8,7 @@ typedef struct Links{
 
   //estructura de document
 
-typedef struct Document {
+typedef struct{
   int id; // ID del document
   char* title; // títol del document
   char* body; // cos del document
