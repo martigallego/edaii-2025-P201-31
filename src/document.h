@@ -18,5 +18,6 @@ typedef struct Document{
 Document* document_desserialize(char* path);    // declarar de la funció document_desserialize
 void freeDocument(Document* document); // declarar de freeDocument
 void freeLinks(Links* link); // declarar de freeLinks
+//falta declarar --> la funcio que crida document_desserialize per llegir cadascun dels fitxers dins de la carpeta
 
 

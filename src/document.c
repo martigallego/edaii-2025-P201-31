@@ -108,6 +108,11 @@ Document *document_desserialize(char *path) {
     document->links = links; //assginar els links al document
     fclose(f); //tancar el arxiu
     return document; //retornar el document 
+
+
+//funcio que crida document_desserialize per llegir cadascun dels fitxers dins de la carpeta
+
+
 }
 
 
