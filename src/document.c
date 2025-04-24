@@ -98,13 +98,18 @@ Document *document_desserialize(char *path) {
             linkBufferIdx = 0; //reset link buffer index
         }
     }
+    assert(bufferIdx < bufferSize);
     buffer[bufferIdx++] = '\0';
     
-    //assigna el cos a l'estructura Document
-    document->body = (char *)malloc(sizeof(char) * (bufferIdx + 1)); // +1 per al caràcter null
-    strcpy(document->body, buffer);
-    document->links = links; // assigna la llista d'enllaços al document
+    char *body = (char *)malloc(sizeof(char) * bufferIdx);
+    strcpy(body, buffer);
 
-    fclose(f); // tanca el fitxer
-    return document; // retorna el document
-}
+    document->body = body; //assignar cos al document
+    document->links = links; //assginar els links al document
+    fclose(f); //tancar el arxiu
+    return document; //retornar el document 
+
+
+
+
+
