@@ -4,12 +4,15 @@
 #include <string.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <dirent.h> 
+#include <sys/stat.h>
 
+//funcio per inicialitzar una llista de enllaços
 Links *LinksInit() {
-    return NULL; // Inicialitza la llista d'enllaços com a NULL
+    return NULL; //inicialitza la llista d'enllaços com a NULL
 }
 
-//alliberar links --> text i estructura
+//funcio per alliberar links --> text i estructura
 void freeLinks(Links* link) {
     while (link != NULL){ //comprova que el link no es null
         Links* temp = link; //node actual
@@ -39,10 +42,10 @@ void LinksAdd(Links **head, int documentId, char *linkText) {
 }
 
 //Funcio per llegir un document del dataset i guardr tota la informacio
-
 Document *document_desserialize(char *path) {
     FILE *f = fopen(path, "r");
     assert(f != NULL);
+
     Document *document = (Document *)malloc(sizeof(Document));
     
     char buffer[262144];
@@ -61,11 +64,11 @@ Document *document_desserialize(char *path) {
     // parse title
     bufferIdx = 0; //reset buffer index for title
     while ((ch = fgetc(f)) != '\n') {
-        assert(bufferIdx < bufferSize);
-        buffer[bufferIdx++] = ch;
+        assert(bufferIdx < bufferSize); // comprova que no sobrepassem la mida del buffer
+        buffer[bufferIdx++] = ch; // guarda el caràcter llegit dins el buffer i incrementa l'índex
     }
-    buffer[bufferIdx++] = '\0';
-    document->title = strdup(buffer); //assignar titol
+    buffer[bufferIdx++] = '\0'; // afegeix el caràcter nul al final per tancar la cadena
+    document->title = strdup(buffer); // assigna el contingut del buffer com a títol del document (còpia dinàmica)
 
     // parse body
     char linkBuffer[64];
@@ -93,7 +96,7 @@ Document *document_desserialize(char *path) {
                 assert(linkBufferIdx < linkBufferSize);
                 linkBuffer[linkBufferIdx++] = ch;
             } 
-        } else if (ch == '[') { // found beginning of link text
+        } else if (ch == ']') { // found beginning of link text
             parsingLink = true;
             linkBufferIdx = 0; //reset link buffer index
         }
@@ -108,12 +111,59 @@ Document *document_desserialize(char *path) {
     document->links = links; //assginar els links al document
     fclose(f); //tancar el arxiu
     return document; //retornar el document 
-
-
-//funcio que crida document_desserialize per llegir cadascun dels fitxers dins de la carpeta
-
-
 }
 
+// funció que llegeix tots els documents d'una carpeta i retorna una linked list de Document
+Document* loadAllDocuments(const char *directoryPath) {
+    DIR *dir; // punter per accedir al directori
+    struct dirent *entry; // punter a una estructura dirent que representa una entrada del directori
+    Document *documents = NULL; // inicialitza la llista de documents com a NULL
 
+    // intentar obrir el directori especificat
+    dir = opendir(directoryPath);
+    if (dir == NULL) { // comprovar si el directori s'ha obert correctament
+        perror("no es pot obrir el directori"); // mostra un missatge d'error si no es pot obrir
+        return NULL; // torna NULL si no es pot obrir el directori
+    }
 
+    // itero sobre cada entrada del directori
+    while ((entry = readdir(dir)) != NULL) {
+        // ignorar entrades "." i ".." que representen el directori actual i el pare
+        if (entry->d_name[0] == '.') {
+            continue; // passar a la següent entrada
+        }
+
+        // crear el camí complet del fitxer
+        char filePath[512];
+        snprintf(filePath, sizeof(filePath), "%s/%s", directoryPath, entry->d_name); // crear el path complet del fitxer
+
+        // comprovar si és un fitxer regular
+        struct stat fileStat;
+        if (stat(filePath, &fileStat) == 0 && S_ISREG(fileStat.st_mode)) {
+            // cridar a document_desserialize per cada fitxer
+            Document *document = document_desserialize(filePath);
+            if (document != NULL) { // comprovar si el document s'ha deserialitzat correctament
+                // afegir el document a la llista
+                document->next = documents; // afegir al principi de la llista
+                documents = document; // actualitzar el cap de la llista
+
+                // mostrar la informació del document
+                printf("ID: %d\n", document->id);
+                printf("Title: %s\n", document->title);
+                printf("Body: %s\n", document->body);
+                
+                // mostrar enllaços
+                Links *current = document->links; // punter per recórrer la llista d'enllaços
+                while (current) { // iterar sobre cada enllaç
+                    printf("Link ID: %d, Text: %s\n", current->documentId, current->linkText);
+                    current = current->next; // passar al següent enllaç
+                }
+            } else {
+                printf("error al llegir el document: %s\n", filePath); // mostrar missatge d'error si no es pot llegir el document
+            }
+        }
+    }
+
+    closedir(dir); // tancar el directori un cop s'han llegit totes les entrades
+    return documents; // retorna la llista de documents carregats
+}

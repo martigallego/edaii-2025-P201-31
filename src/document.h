@@ -1,4 +1,10 @@
-//LAB 1 a)
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+#include <assert.h>
+
+//estructura dels links
 typedef struct Links{
     int documentId; // ID del document de destinació
     char* title;  
@@ -6,18 +12,21 @@ typedef struct Links{
     struct Links* next; // punter al següent enllaç
   }Links;
 
-  //estructura de document
-
+//estructura de document
 typedef struct Document{
   int id; // ID del document
   char* title; // títol del document
   char* body; // cos del document
   Links* links; // llista d'enllaços
-} Document;
+  struct Document* next; //punter al seguent document
+}Document;
 
-Document* document_desserialize(char* path);    // declarar de la funció document_desserialize
+Document* document_desserialize(char *path);    // declarar de la funció document_desserialize
+Document* loadAllDocuments(const char *directoryPath); // declarar la funció que carrega documents
+
 void freeDocument(Document* document); // declarar de freeDocument
 void freeLinks(Links* link); // declarar de freeLinks
-//falta declarar --> la funcio que crida document_desserialize per llegir cadascun dels fitxers dins de la carpeta
+
+Links* LinksInit(); //inicialitzar llista de enllaços
 
 

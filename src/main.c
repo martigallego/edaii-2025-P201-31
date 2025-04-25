@@ -19,23 +19,45 @@ int main() {
   // uncomment and run "make v" to see how valgrind detects memory leaks hola
   // createaleak();
 
-  Document* docu = document_desserialize("./datasets/wikipedia12/2.txt");
-  if (docu) {
-    printf("ID: %d\n", docu->id);
-    printf("Title: %s\n", docu->title);
-    printf("Body: %s\n", docu->body);
-    
-    // Imprimeix els enllaços
-    Links* current = docu->links;
-    while (current) {
-        printf("Link ID: %d, Text: %s\n", current->documentId, current->linkText);
-        current = current->next;
-    }
-    
-    freeDocument(docu); // Allibera la memòria
-} else {
-    printf("Error al llegir el document.\n");
-}
-return 0;
+  const char *directoryPath = "./datasets/wikipedia12"; //ruta del directori on es troben els documents
 
+  // Crida la funció per llegir documents del directori
+  loadAllDocuments(directoryPath);
+
+
+  Document *documents = loadAllDocuments(directoryPath);
+
+    // Comprovar si s'han carregat documents
+    if (documents == NULL) {
+        printf("No s'han trobat documents al directori especificat.\n");
+        return 1; // Retornar un codi d'error
+    }
+
+    // Iterar sobre la llista de documents i mostrar la informació
+    Document *current = documents;
+    while (current != NULL) {
+        printf("ID: %d\n", current->id);
+        printf("Title: %s\n", current->title);
+        printf("Body: %s\n", current->body);
+
+        // Mostrar enllaços
+        Links *linkCurrent = current->links; // Punter per recórrer la llista d'enllaços
+        while (linkCurrent != NULL) {
+            printf("Link ID: %d, Text: %s\n", linkCurrent->documentId, linkCurrent->linkText);
+            linkCurrent = linkCurrent->next; // Passar al següent enllaç
+        }
+
+        current = current->next; // Passar al següent document
+        printf("\n"); // Espai entre documents
+    }
+
+    // Alliberar la memòria dels documents carregats
+    current = documents;
+    while (current != NULL) {
+        Document *temp = current;
+        current = current->next;
+        freeDocument(temp); // Alliberar cada document
+    }
+
+    return 0; // Retornar 0 per indicar que tot ha anat bé
 }
