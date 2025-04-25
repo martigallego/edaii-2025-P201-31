@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
-#include "document.h" //cridar a docu.h
+#include "document.h" //cridar a document.h
 
 void createaleak() {
   char *foo = malloc(20 * sizeof(char));
