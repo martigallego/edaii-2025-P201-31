@@ -96,7 +96,7 @@ Document *document_desserialize(char *path) {
                 assert(linkBufferIdx < linkBufferSize);
                 linkBuffer[linkBufferIdx++] = ch;
             } 
-        } else if (ch == ']') { // found beginning of link text
+        } else if (ch == '[') { // found beginning of link text
             parsingLink = true;
             linkBufferIdx = 0; //reset link buffer index
         }
