@@ -1,65 +1,79 @@
-#include "document.h" //cridar a document.h
-#include "sample_lib.h"
-#include <dirent.h>
+#include "document.h"
+#include "query.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/stat.h>
+#include <string.h>
 
-void createaleak() {
-  char *foo = malloc(20 * sizeof(char));
-  printf("Allocated leaking string: %s", foo);
+
+//funció per mostrar tots els documents carregats (LAB1)
+void lab1_printDocuments(Document *documents) {
+  Document *current = documents;
+  while (current != NULL) {
+    printf("ID: %d\n", current->id); //mostrar id
+    printf("Title: %s\n", current->title); //mostrar títol
+    printf("Body: %s\n", current->body); //mostrar cos
+
+    Links *linkCurrent = current->links;
+    while (linkCurrent != NULL) {
+      printf("Link ID: %d, Text: %s\n", linkCurrent->documentId, linkCurrent->linkText); //mostrar enllaços
+      linkCurrent = linkCurrent->next;
+    }
+    printf("\n");
+    current = current->next;
+  }
+}
+
+//funció per implementar la cerca per consulta (LAB2)
+void lab2_querySearch(Document *documents) {
+  char input[256];
+  while (1) {
+    printf("Enter query (empty to quit): "); //demanar consulta
+    if (fgets(input, sizeof(input), stdin) == NULL) {
+      break; //sortir si error o EOF
+    }
+    input[strcspn(input, "\n")] = 0; //eliminar salt de línia
+
+    if (strlen(input) == 0) {
+      break; //sortir si consulta buida
+    }
+
+    Query *query = initQueryFromString(input); //inicialitzar consulta
+    if (query == NULL) {
+      printf("Invalid query.\n"); //consulta invàlida
+      continue;
+    }
+
+    Document *results = linearSearchDocuments(documents, query, 5); //cerca lineal
+    if (results == NULL) {
+      printf("No documents found matching the query.\n"); //no trobat
+    } else {
+      printDocuments(results); //mostrar resultats
+    }
+
+    freeQuery(query); //alliberar consulta
+  }
 }
 
 int main() {
-  // printf("*****************\nWelcome to EDA 2!\n*****************\n");
+  const char *directoryPath = "./datasets/wikipedia12"; //ruta documents
 
-  // how to import and call a function
-  // printf("Factorial of 4 is %d\n", fact(4));
+  Document *documents = loadAllDocuments(directoryPath); //carregar documents
 
-  // uncomment and run "make v" to see how valgrind detects memory leaks hola
-  // createaleak();
-
-  const char *directoryPath =
-      "./datasets/wikipedia12"; // ruta del directori on es troben els documents
-
-  // Crida la funció per llegir documents del directori
-  loadAllDocuments(directoryPath);
-
-  Document *documents = loadAllDocuments(directoryPath);
-
-  // Comprovar si s'han carregat documents
   if (documents == NULL) {
-    printf("No s'han trobat documents al directori especificat.\n");
-    return 1; // Retornar un codi d'error
+    printf("No s'han trobat documents al directori especificat.\n"); //error
+    return 1;
   }
 
-  // Iterar sobre la llista de documents i mostrar la informació
+  lab1_printDocuments(documents); //mostrar documents (LAB1)
+  lab2_querySearch(documents); //cerca per consulta (LAB2)
+
+  //alliberar memoria documents
   Document *current = documents;
-  while (current != NULL) {
-    printf("ID: %d\n", current->id);
-    printf("Title: %s\n", current->title);
-    printf("Body: %s\n", current->body);
-
-    // Mostrar enllaços
-    Links *linkCurrent =
-        current->links; // Punter per recórrer la llista d'enllaços
-    while (linkCurrent != NULL) {
-      printf("Link ID: %d, Text: %s\n", linkCurrent->documentId,
-             linkCurrent->linkText);
-      linkCurrent = linkCurrent->next; // Passar al següent enllaç
-    }
-
-    current = current->next; // Passar al següent document
-    printf("\n");            // Espai entre documents
-  }
-
-  // Alliberar la memòria dels documents carregats
-  current = documents;
   while (current != NULL) {
     Document *temp = current;
     current = current->next;
-    freeDocument(temp); // Alliberar cada document
+    freeDocument(temp);
   }
 
-  return 0; // Retornar 0 per indicar que tot ha anat bé
+  return 0;
 }
