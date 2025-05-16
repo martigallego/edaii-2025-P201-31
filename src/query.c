@@ -76,16 +76,16 @@ static int documentContainsKeyword(Document *doc, const char *keyword) {
     return found; //retornar si s'ha trobat
 }
 
-//funció que comprova si un document conté totes les paraules clau de la consulta
+//funció que comprova si un document conté alguna de les paraules clau de la consulta (OR)
 static int documentMatchesQuery(Document *doc, Query *query) {
     Query *current = query; //punter a la llista de paraules clau
     while(current != NULL) { //mentre hi hagi paraules
-        if(!documentContainsKeyword(doc, current->keyword)) { //si no conté alguna paraula
-            return 0; //retornar 0
+        if(documentContainsKeyword(doc, current->keyword)) { //si conté alguna paraula
+            return 1; //retornar 1
         }
         current = current->next; //avançar a la següent paraula
     }
-    return 1; //si conté totes, retornar 1
+    return 0; //si no conté cap, retornar 0
 }
 
 //funció que fa una cerca lineal a la llista de documents per trobar els que contenen totes les paraules clau

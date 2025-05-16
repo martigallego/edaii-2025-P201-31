@@ -45,7 +45,7 @@ void lab2_querySearch(Document *documents) {
 
     Document *results = linearSearchDocuments(documents, query, 5); //cerca lineal
     if (results == NULL) {
-      printf("No documents found matching the query.\n"); //no trobat
+      printf("No s'ha trobat cap document que coincideixi amb la consulta.\n"); //no trobat
     } else {
       printDocuments(results); //mostrar resultats
     }
