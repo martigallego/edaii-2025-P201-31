@@ -1,5 +1,6 @@
-#include "document.h"
-#include "query.h"
+#include "../src/document.h"
+#include "../src/query.h"
+#include "utils.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -23,6 +24,8 @@ Document *createTestDocument(int id, const char *title, const char *body) {
 
 // test 1: crear una llista de consultes a partir d'una cadena
 void test_initQueryFromString() {
+  runningtest("test_initQueryFromString");
+  {
   Query *query = initQueryFromString(
       "exemple de consulta de prova"); // inicialitzar la llista de consultes
                                        // amb la cadena "exemple de consulta de
@@ -42,21 +45,26 @@ void test_initQueryFromString() {
   // alliberar la llista de consultes
   freeQuery(query);
   // imprimir missatge de test passat
-  printf("test_initQueryFromString passed\n");
+  }
+  successtest();
 }
 
 // test 2: alliberar la llista de consultes
 void test_freeQuery() {
+  runningtest("test_freeQuery");
+  {
   // inicialitzar la llista de consultes amb la cadena "free test"
   Query *query = initQueryFromString("free test");
   // alliberar la llista de consultes
   freeQuery(query);
-  // no hi ha assert, només comprovem que no hi hagi crash
-  printf("test_freeQuery passed\n");
+  }
+  successtest();
 }
 
 // test 3: cerca lineal amb documents i consultes
 void test_linearSearchDocuments() {
+  runningtest("test_linearSearchDocuments");
+  {
   // crear document de prova 1
   Document *doc1 = createTestDocument(
       1, "Hola mundo",
@@ -82,16 +90,16 @@ void test_linearSearchDocuments() {
   // alliberar documents
   freeDocument(doc1);
   freeDocument(doc2);
-  printf("test_linearSearchDocuments passed\n"); // imprimir missatge de test
-                                                 // passat
+  }
+  successtest();
 }
 
-// funció principal per executar els tests
-int main() {
-  test_initQueryFromString();          // test 1
-  test_freeQuery();                    // test 2
-  test_linearSearchDocuments();        // test 3
-  printf("all query tests passed.\n"); // imprimir missatge final de tots els
-                                       // tests passats
-  return 0;
+void query_tests(){
+  running("query_tests");
+  {
+  test_initQueryFromString();
+  test_freeQuery();
+  test_linearSearchDocuments();
+  }
+  success();
 }

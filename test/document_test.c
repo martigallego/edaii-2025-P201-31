@@ -1,10 +1,13 @@
-#include "document.h"
+#include "../src/document.h"
+#include "utils.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
 
 // test la deserialització del document a partir d'un fitxer de mostra
 void test_document_desserialize() {
+  runningtest("test_document_desserialize");
+  {
   Document *doc = document_desserialize(
       "datasets/wikipedia12/0.txt"); // deserialitzar document del fitxer de
                                      // mostra
@@ -19,12 +22,14 @@ void test_document_desserialize() {
   assert(doc->links != NULL); // comprovar que hi ha enllaços (assumint que el
                               // fitxer de mostra en té)
   freeDocument(doc); // alliberar memòria del document
-  printf("test_document_desserialize passed\n"); // imprimir missatge de test
-                                                 // passat
+  }
+  successtest();
 }
 
 // test linked list of documents loading
 void test_loadAllDocuments() {
+  runningtest("test_loadAllDocuments");
+  {
   Document *docs = loadAllDocuments(
       "datasets/wikipedia12"); // carregar tots els documents del directori
   assert(docs != NULL);        // comprovar que la llista no és NULL
@@ -46,11 +51,14 @@ void test_loadAllDocuments() {
     current = current->next;
     freeDocument(temp); // alliberar document
   }
-  printf("test_loadAllDocuments passed\n"); // imprimir missatge de test passat
+  }
+  successtest();
 }
 
 // test de la llista enllaçada d'enllaços afegits i alliberats
 void test_links_list() {
+  runningtest("test_linked_list");
+  {
   Links *links = NULL; // inicialitzar llista d'enllaços a NULL
   LinksAdd(&links, 1,
            "Link text 1"); // afegir enllaç amb id 1 i text "Link text 1"
@@ -64,15 +72,16 @@ void test_links_list() {
   assert(links->next != NULL);          // comprovar que hi ha un segon enllaç
   assert(links->next->documentId == 1); // comprovar que el segon enllaç té id 1
   freeLinks(links);                     // alliberar la llista d'enllaços
-  printf("test_links_list passed\n");   // imprimir missatge de test passat
+  }
+  successtest();
 }
 
-// funció principal per executar els tests
-int main() {
-  test_document_desserialize(); // test de deserialització de document
-  test_loadAllDocuments();      // test de càrrega de documents
-  test_links_list();            // test de llista d'enllaços
-  printf("all document tests passed.\n"); // imprimir missatge final de tots els
-                                          // tests passats
-  return 0;
+void document_tests(){
+  running("document_tests");
+  {
+  test_document_desserialize();
+  test_loadAllDocuments();
+  test_links_list();
+  }
+  success();
 }
