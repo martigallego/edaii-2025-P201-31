@@ -1,3 +1,6 @@
+#ifndef DOCUMENT_H
+#define DOCUMENT_H
+
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -30,3 +33,7 @@ void freeDocument(Document *document); // declarar de freeDocument
 void freeLinks(Links *link);           // declarar de freeLinks
 
 Links *LinksInit(); // inicialitzar llista de enllaços
+
+void LinksAdd(Links **links, int documentId, char *linkText); // declarar LinksAdd
+
+#endif // DOCUMENT_H

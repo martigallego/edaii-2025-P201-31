@@ -1,3 +1,6 @@
+#ifndef QUERY_H
+#define QUERY_H
+
 // estructura per a la consulta (query)
 typedef struct Query {
   char *keyword;      // paraula clau
@@ -26,3 +29,5 @@ void addLastQuery(Query *query);
 
 // mostrar les últimes 3 consultes per la CLI
 void showLastQueries();
+
+#endif // QUERY_H

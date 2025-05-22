@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "../src/document.h"
 #include "../src/query.h"
 #include "utils.h"
@@ -27,9 +28,7 @@ void test_initQueryFromString() {
   runningtest("test_initQueryFromString");
   {
   Query *query = initQueryFromString(
-      "exemple de consulta de prova"); // inicialitzar la llista de consultes
-                                       // amb la cadena "exemple de consulta de
-                                       // prova"
+      "test query example"); // inicialitzar la llista de consultes amb la cadena "test query example"
   assert(query != NULL); // comprovar que la llista no és NULL
   assert(strcmp(query->keyword, "test") ==
          0); // comprovar que la primera paraula clau és "test"
@@ -63,7 +62,7 @@ void test_freeQuery() {
 
 // test 3: cerca lineal amb documents i consultes
 void test_linearSearchDocuments() {
-  runningtest("test_linearSearchDocuments");
+  // runningtest("test_linearSearchDocuments");
   {
   // crear document de prova 1
   Document *doc1 = createTestDocument(
@@ -74,8 +73,8 @@ void test_linearSearchDocuments() {
 
   doc1->next = doc2; // enllaçar doc1 amb doc2
 
-  // inicialitzar la consulta amb la paraula "test"
-  Query *query = initQueryFromString("test");
+  // inicialitzar la consulta amb la paraula "document"
+  Query *query = initQueryFromString("document");
   // fer la cerca lineal amb doc1 com a llista de documents
   Document *resultats = linearSearchDocuments(doc1, query, 5);
   // comprovar que s'han trobat resultats
