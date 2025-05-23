@@ -92,9 +92,19 @@ Document *document_desserialize(char *path) {
         int linkId = atoi(linkBuffer);
 
         // afegeix l'enllaç a la llista
-        LinksAdd(&links, linkId,
-                 buffer + bufferIdx - linkBufferIdx - strlen(linkBuffer) -
-                     2); // afegeix el text de l'enllaç
+        // Crear una cadena temporal per al text de l'enllaç
+        // Calcular la posició inicial del text de l'enllaç
+        int startPos = bufferIdx - linkBufferIdx - strlen(linkBuffer) - 2;
+        int linkTextLength = linkBufferIdx;
+
+        if (startPos < 0) startPos = 0;
+        if (linkTextLength < 0) linkTextLength = 0;
+
+        char *linkText = (char *)malloc(linkTextLength + 1);
+        strncpy(linkText, buffer + startPos, linkTextLength);
+        linkText[linkTextLength] = '\0';
+
+        LinksAdd(&links, linkId, linkText); // afegeix el text de l'enllaç
 
         linkBufferIdx = 0;
       } else if (ch != '(') { // skip first parenthesis of the link
@@ -158,6 +168,7 @@ Document *loadAllDocuments(const char *directoryPath) {
         documents = document;       // actualitzar el cap de la llista
 
         // mostrar la informació del document
+        /*
         printf("ID: %d\n", document->id);
         printf("Title: %s\n", document->title);
         printf("Body: %s\n", document->body);
@@ -170,6 +181,7 @@ Document *loadAllDocuments(const char *directoryPath) {
                  current->linkText);
           current = current->next; // passar al següent enllaç
         }
+        */
       } else {
         printf("error al llegir el document: %s\n",
                filePath); // mostrar missatge d'error si no es pot llegir el
