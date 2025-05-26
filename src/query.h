@@ -2,6 +2,7 @@
 #define QUERY_H
 
 #include "document.h"
+#include "hashmap.h"
 
 typedef struct Query {
   char *keyword;
@@ -11,7 +12,12 @@ typedef struct Query {
 Query *initQueryFromString(const char *input);
 void freeQuery(Query *query);
 
-Document *linearSearchDocuments(Document *documents, Query *query, int maxResults);
+// Esta función será reemplazada/mejorada por la nueva búsqueda
+// Document *linearSearchDocuments(Document *documents, Query *query, int maxResults);
+
+// Nueva función de búsqueda que utiliza el índice invertido
+Document *searchDocumentsWithReverseIndex(HashMap *reverseIndex, Document *allDocuments, Query *query, int maxResults);
+
 void printDocuments(Document *documents);
 
 void addLastQuery(Query *query);

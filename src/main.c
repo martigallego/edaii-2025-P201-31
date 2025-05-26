@@ -1,94 +1,128 @@
-#include "document.h" 
+#include "document.h"
 #include "query.h" 
-#include <stdio.h> 
-#include <stdlib.h> 
-#include <string.h> 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-//funció per mostrar tots els documents carregats (LAB1)
+// funció per mostrar tots els documents carregats (LAB1)
 void lab1_printDocuments(Document *documents) {
-  Document *current = documents; //inicialitzar pointer al primer document
-  int index = 1; // inicialitzar índex del document
-  while (current != NULL) { //recórrer tots els documents
-    printf("[%d] ID: %d\n", index, current->id); // mostrar índex i ID
-    printf("    Title: %s\n", current->title); //mostrar títol
-    printf("    Body: %.150s%s\n", current->body, strlen(current->body) > 150 ? "..." : ""); // mostrar fins a 150 caràcters del cos
+  Document *current = documents;
+  int index = 1;
+  while (current != NULL) {
+    printf("[%d] ID: %d\n", index, current->id);       // mostrar índex i id
+    printf("    Title: %s\n", current->title); // mostrar títol
+    printf("    Body: %.150s%s\n", current->body, strlen(current->body) > 150 ? "..." : "");   // mostrar primeres 150 chars cos
 
-    Links *linkCurrent = current->links; // inicialitzar pointer a enllaços
-    while (linkCurrent != NULL) { // recórrer tots els enllaços
+    Links *linkCurrent = current->links;
+    while (linkCurrent != NULL) {
       printf("    Link ID: %d, Text: %s\n", linkCurrent->documentId,
-             linkCurrent->linkText); //mostrar ID i text de l’enllaç
-      linkCurrent = linkCurrent->next; // passar al següent enllaç
+             linkCurrent->linkText); // mostrar enllaços
+      linkCurrent = linkCurrent->next;
     }
-    printf("\n"); //imprimir línia en blanc
-    current = current->next; //passar al següent document
-    index++; //incrementar índex
+    printf("\n");
+    current = current->next;
+    index++;
   }
 }
 
 // funció per mostrar un document per índex
 void showDocumentByIndex(Document *documents) {
   int index;
-  printf("Introdueix l'índex del document a mostrar (0 per sortir): "); // demanar índex a l’usuari
-  if (scanf("%d", &index) != 1) { //comprovar entrada vàlida
-    printf("Entrada invàlida.\n");
-    int c; while ((c = getchar()) != '\n' && c != EOF); //netejar buffer d’entrada
+  printf("Introdueix l'índex del document a mostrar (0 per sortir): ");
+  if (scanf("%d", &index) != 1) {
+    printf("Entrada invàlida. Torna al menú principal.\n");
+    // Netejar buffer stdin
+    int c; while ((c = getchar()) != '\n' && c != EOF);
     return;
   }
   if (index == 0) {
-    printf("Sortint de la selecció de documents.\n");
-    exit(0); // sortir del programa
+    printf("Sortint de la selecció de documents. Tornant al menú principal.\n");
+    // Limpiar el buffer por si acaso, aunque aquí scanf ya leyó el número
+    int c; while ((c = getchar()) != '\n' && c != EOF);
+    return; // <--- ¡ESTE ES EL CAMBIO IMPORTANTE!
   }
-  Document *current = documents; // inicialitzar pointer a documents
+  Document *current = documents;
   int currentIndex = 1;
-  while (current != NULL && currentIndex < index) { // buscar el document per índex
+  while (current != NULL && currentIndex < index) {
     current = current->next;
     currentIndex++;
   }
   if (current == NULL) {
-    printf("Índex invàlid.\n"); // mostrar missatge si l’índex no existeix
+    printf("Índex invàlid. El document no existeix.\n");
   } else {
-    printf("Document ID: %d\n", current->id); // mostrar ID
-    printf("Títol: %s\n", current->title); // mostrar títol
-    printf("Cos: %s\n", current->body); // mostrar cos
+    printf("\n--- Informació del Document [%d] ---\n", index);
+    printf("Document ID: %d\n", current->id);
+    printf("Títol: %s\n", current->title);
+    printf("Cos:\n%s\n", current->body);
     Links *linkCurrent = current->links;
-    while (linkCurrent != NULL) { // recórrer enllaços del document
-      printf("Enllaç ID: %d, Text: %s\n", linkCurrent->documentId,
-             linkCurrent->linkText); //mostrar info de l’enllaç
-      linkCurrent = linkCurrent->next; //passar al següent enllaç
+    if (linkCurrent != NULL) {
+      printf("Enllaços:\n");
+      while (linkCurrent != NULL) {
+        printf("  - Enllaç ID: %d, Text: %s\n", linkCurrent->documentId,
+               linkCurrent->linkText);
+        linkCurrent = linkCurrent->next;
+      }
+    } else {
+      printf("No hi ha enllaços per a aquest document.\n");
     }
+    printf("--------------------------------------\n");
   }
-  int c; while ((c = getchar()) != '\n' && c != EOF); // netejar buffer stdin
+  // Netejar buffer stdin
+  int c; while ((c = getchar()) != '\n' && c != EOF);
 }
 
+
 // funció per implementar la cerca per consulta (LAB2)
-void lab2_querySearch(Document *documents) {
-  char input[256]; // declarar buffer per la consulta
-  while (1) { // repetir fins que es decideixi sortir
-    printf("Introduir la consulta (ENTER per sortir):"); // demanar consulta
+// Ahora recibe el HashMap del índice invertido
+void lab2_querySearch(Document *documents, HashMap *reverseIndex) {
+  char input[256];
+  while (1) {
+    printf("\nIntroduir la consulta (ENTER per sortir): "); // demanar consulta
     if (fgets(input, sizeof(input), stdin) == NULL) {
-      break; // sortir si hi ha error o EOF
+      break; // sortir si error o EOF
     }
-    input[strcspn(input, "\n")] = 0; //eliminar salt de línia
+    input[strcspn(input, "\n")] = 0; // eliminar salt de línia
 
     if (strlen(input) == 0) {
-      break; //sortir si la consulta està buida
+      break; // sortir si consulta buida
     }
 
     Query *query = initQueryFromString(input); // inicialitzar consulta
     if (query == NULL) {
-      printf("Consulta invàlida.\n"); // mostrar error si la consulta no és vàlida
+      printf("Consulta invàlida.\n"); // consulta invàlida
       continue;
     }
-    addLastQuery(initQueryFromString(input)); // afegir consulta a l’historial
 
-    Document *results = linearSearchDocuments(documents, query, 5); // fer cerca als documents
+    // NOTA: Mejora en la eficiencia al añadir la consulta.
+    // Antes: addLastQuery(initQueryFromString(input));
+    // Ahora: se crea una copia de 'query' si addLastQuery la necesita.
+    // Asumo que addLastQuery ya hace una copia profunda, como lo hacía.
+    addLastQuery(initQueryFromString(input)); // Se sigue creando una Query doblemente. Podría optimizarse.
+
+
+    // CAMBIO CLAVE: Usar searchDocumentsWithReverseIndex en lugar de linearSearchDocuments
+    Document *results =
+        searchDocumentsWithReverseIndex(reverseIndex, documents, query, 5); // cerca amb índex invertit
     if (results == NULL) {
-      printf("No s'ha trobat cap document que coincideixi amb la consulta.\n");
+      printf(
+          "No s'ha trobat cap document que coincideixi amb la consulta.\n"); // no trobat
     } else {
-      printDocuments(results); // mostrar documents trobats
+      printf("\n--- Resultats de la cerca ---\n");
+      printDocuments(results); // mostrar resultats (esta función está en query.c y no muestra links)
+      printf("----------------------------\n");
     }
-    showLastQueries(); //mostrar les últimes consultes
-    freeQuery(query); // alliberar memòria de la consulta
+
+    // mostrar les últimes 3 consultes
+    showLastQueries();
+
+    freeQuery(query); // alliberar consulta
+    // También es crucial liberar los 'results' de la búsqueda, ya que son copias.
+    Document *currentResult = results;
+    while (currentResult != NULL) {
+        Document *temp = currentResult;
+        currentResult = currentResult->next;
+        freeDocument(temp); // freeDocument libera título, cuerpo, links, y la estructura
+    }
   }
 }
 
@@ -98,72 +132,90 @@ int main() {
     "./datasets/wikipedia270",
     "./datasets/wikipedia540",
     "./datasets/wikipedia5400"
-  }; //definir array amb les rutes dels datasets
-  int numDatasets = sizeof(datasets) / sizeof(datasets[0]); // calcular quants datasets hi ha
+  };
+  int numDatasets = sizeof(datasets) / sizeof(datasets[0]);
 
   printf("Selecciona el dataset a carregar:\n");
   for (int i = 0; i < numDatasets; i++) {
-    printf("%d. %s\n", i + 1, datasets[i]); //mostrar cada dataset com a opció
+    printf("%d. %s\n", i + 1, datasets[i]);
   }
-  printf("Tria una opció (1-%d): ", numDatasets); //demanar opció
+  printf("Tria una opció (1-%d): ", numDatasets);
 
   int datasetOption;
   if (scanf("%d", &datasetOption) != 1 || datasetOption < 1 || datasetOption > numDatasets) {
-    printf("Opció invàlida. Sortint.\n"); // mostrar error i sortir si l’opció no és correcta
+    printf("Opció invàlida. Sortint.\n");
     return 1;
   }
-  int c; while ((c = getchar()) != '\n' && c != EOF); // netejar buffer stdin
+  int c; while ((c = getchar()) != '\n' && c != EOF); // netejar buffer
 
-  const char *directoryPath = datasets[datasetOption - 1]; // btenir ruta del dataset seleccionat
+  const char *directoryPath = datasets[datasetOption - 1];
 
-  Document *documents = loadAllDocuments(directoryPath); //carrregar tots els documents del directori
+  Document *documents = loadAllDocuments(directoryPath); // carregar documents
 
   if (documents == NULL) {
-    printf("No s'han trobat documents al directori especificat.\n"); //mostrar missatge d’error si no es troben documents
+    printf("No s'han trobat documents al directori especificat o no s'ha pogut obrir el directori.\n"); // error
     return 1;
   }
 
-  printf("Dataset carregat: %s\n", directoryPath); // confirmar que el dataset s’ha carregat
+  printf("\nDataset carregat: %s\n", directoryPath);
 
-  while (1) { // mostrar menú principal
-    printf("\nOpcions:\n");
+  // NUEVO: Construir el índice invertido después de cargar los documentos
+  HashMap *reverseIndex = buildReverseIndex(documents);
+  if (reverseIndex == NULL) {
+      printf("Error al construir el índice invertido. Saliendo.\n");
+      // Liberar documentos si el índice no se pudo construir.
+      Document *current_doc_to_free = documents;
+      while (current_doc_to_free != NULL) {
+          Document *temp = current_doc_to_free;
+          current_doc_to_free = current_doc_to_free->next;
+          freeDocument(temp);
+      }
+      return 1;
+  }
+
+
+  while (1) {
+    printf("\n--- Menú Principal ---\n");
     printf("1. Mostrar documents\n");
     printf("2. Veure document per índex\n");
-    printf("3. Fer cerca per paraules clau\n");
-    printf("0. Sortir\n");
+    printf("3. Fer cerca per paraules clau\n"); // Descripción actualizada
+    printf("0. Sortir del programa\n");
     printf("Tria una opció: ");
 
     int option;
     if (scanf("%d", &option) != 1) {
-      printf("Entrada invàlida.\n");
-      int c; while ((c = getchar()) != '\n' && c != EOF); //netejar buffer
+      printf("Entrada invàlida. Si us plau, introdueix un número.\n");
+      int c_clean; while ((c_clean = getchar()) != '\n' && c_clean != EOF);
       continue;
     }
-    int c; while ((c = getchar()) != '\n' && c != EOF); //netejar buffer stdin
+    int c_clean; while ((c_clean = getchar()) != '\n' && c_clean != EOF); // netejar buffer
 
     switch (option) {
       case 1:
-        lab1_printDocuments(documents); //funció per mostrar documents
+        lab1_printDocuments(documents);
         break;
       case 2:
-        showDocumentByIndex(documents); //funció per veure document concret
+        showDocumentByIndex(documents);
         break;
       case 3:
-        lab2_querySearch(documents); //funció per fer consulta
+        lab2_querySearch(documents, reverseIndex); // Ahora se pasa el índice invertido
         break;
       case 0:
-        printf("Sortint del programa.\n");
+        printf("Sortint del programa. Alliberant memòria...\n");
+        // alliberar memoria documents
         Document *current = documents;
         while (current != NULL) {
           Document *temp = current;
           current = current->next;
-          freeDocument(temp); //alliberar memòria de cada document
+          freeDocument(temp);
         }
-        exit(0); // sortir del programa
+        // NUEVO: Liberar la memoria del hashmap
+        freeHashMap(reverseIndex);
+        exit(0);
       default:
-        printf("Opció desconeguda.\n"); // mostrar missatge per opcions no vàlides
+        printf("Opció desconeguda. Si us plau, tria una opció vàlida.\n");
     }
   }
 
-  return 0; //fi del programa
+  return 0;
 }
