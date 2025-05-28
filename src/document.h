@@ -7,34 +7,40 @@
 #include <stdlib.h>
 #include <string.h>
 
-// estructura dels links
-typedef struct Links {
-  int documentId; // ID del document de destinació
-  char *title;
-  char *linkText;     //text de l'enllaç
-  struct Links *next; // punter al següent enllaç
-} Links;
+// estructura dels enllaços
+typedef struct Enllacos {
+  int idDocumentDesti; // ID del document de destinació
+  char *titolEnllac;   // títol del document enllaçat (opcional)
+  char *textEnllac;    // text de l'enllaç
+  struct Enllacos *seguent; // punter al següent enllaç
+} Enllacos;
 
 // estructura de document
 typedef struct Document {
-  int id;                //ID del document
-  char *title;           //títol del document
-  char *body;            //cos del document
-  Links *links;          //llista d'enllaços
-  struct Document *next; //punter al seguent document
-  double relevanceScore;  //puntuació de rellevància per a ordenar documents
+  int id;                // ID del document
+  char *titol;           // títol del document
+  char *cos;             // cos del document
+  Enllacos *enllacos;    // llista d'enllaços
+  struct Document *seguent; // punter al següent document
+  double puntuacioRellevancia; // Puntuació de rellevància per a ordenar documents
 } Document;
 
-Document *document_desserialize(
-    char *path); // declarar de la funció document_desserialize
-Document *loadAllDocuments(
-    const char *directoryPath); // declarar la funció que carrega documents
+// declarar de la funció deserialitzaDocument
+Document *deserialitzaDocument(char *camins); 
 
-void freeDocument(Document *document); // declarar de freeDocument
-void freeLinks(Links *link);           // declarar de freeLinks
+// declarar la funció que carrega tots els documents
+Document *carregaTotsElsDocuments(const char *rutaDirectori); 
 
-Links *LinksInit(); //inicialitzar llista de enllaços
+// declarar de alliberaDocument
+void alliberaDocument(Document *document); 
 
-void LinksAdd(Links **links, int documentId, char *linkText); // declarar LinksAdd
+// declarar de alliberaEnllacos
+void alliberaEnllacos(Enllacos *enllac);    
+
+// inicialitzar llista de enllaços
+Enllacos *iniciaEnllacos(); 
+
+// declarar afegeixEnllac
+void afegeixEnllac(Enllacos **enllacos, int idDocumentDesti, const char *textEnllac); 
 
 #endif // DOCUMENT_H
