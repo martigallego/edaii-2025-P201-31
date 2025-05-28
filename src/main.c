@@ -6,8 +6,8 @@
 
 // funció per mostrar tots els documents carregats (LAB1)
 void lab1_printDocuments(Document *documents) {
-  Document *current = documents;
-  int index = 1;
+  Document *current = documents; // punter a la primera entrada de la llista
+  int index = 1; 
   while (current != NULL) {
     printf("[%d] ID: %d\n", index, current->id);       // mostrar índex i id
     printf("    Title: %s\n", current->title); // mostrar títol
@@ -17,11 +17,11 @@ void lab1_printDocuments(Document *documents) {
     while (linkCurrent != NULL) {
       printf("    Link ID: %d, Text: %s\n", linkCurrent->documentId,
              linkCurrent->linkText); // mostrar enllaços
-      linkCurrent = linkCurrent->next;
+      linkCurrent = linkCurrent->next; // anar al següent enllaç
     }
     printf("\n");
-    current = current->next;
-    index++;
+    current = current->next; // anar al següent document
+    index++; // incrementar índex
   }
 }
 
@@ -44,36 +44,35 @@ void showDocumentByIndex(Document *documents) {
   Document *current = documents;
   int currentIndex = 1;
   while (current != NULL && currentIndex < index) {
-    current = current->next;
+    current = current->next; // anar al següent document
     currentIndex++;
   }
   if (current == NULL) {
     printf("Índex invàlid. El document no existeix.\n");
   } else {
     printf("\n--- Informació del Document [%d] ---\n", index);
-    printf("Document ID: %d\n", current->id);
-    printf("Títol: %s\n", current->title);
-    printf("Cos:\n%s\n", current->body);
-    Links *linkCurrent = current->links;
-    if (linkCurrent != NULL) {
-      printf("Enllaços:\n");
+    printf("Document ID: %d\n", current->id); // mostrar id
+    printf("Títol: %s\n", current->title); // mostrar títol
+    printf("Cos:\n%s\n", current->body); // mostrar cos
+    Links *linkCurrent = current->links; // punter a la primera entrada de la llista
+    if (linkCurrent != NULL) { // si hi ha enllaços
+      printf("Enllaços:\n"); // mostrar enllaços
       while (linkCurrent != NULL) {
-        printf("  - Enllaç ID: %d, Text: %s\n", linkCurrent->documentId,
-               linkCurrent->linkText);
-        linkCurrent = linkCurrent->next;
+        printf("  - Enllaç ID: %d, Text: %s\n", linkCurrent->documentId, linkCurrent->linkText); // mostrar enllaços
+        linkCurrent = linkCurrent->next; // anar al següent enllaç
       }
     } else {
-      printf("No hi ha enllaços per a aquest document.\n");
+      printf("No hi ha enllaços per a aquest document.\n"); 
     }
-    printf("--------------------------------------\n");
+    printf("--------------------------------------\n"); 
   }
   // Netejar buffer stdin
-  int c; while ((c = getchar()) != '\n' && c != EOF);
+int c; while ((c = getchar()) != '\n' && c != EOF); // Neteja el buffer d'entrada per eliminar qualsevol caràcter restant després de llegir l'entrada, evitant que afecti futures lectures
 }
 
 
 // funció per implementar la cerca per consulta (LAB2)
-// Ahora recibe el HashMap del índice invertido
+//rep el HashMap del índice invertido
 void lab2_querySearch(Document *documents, HashMap *reverseIndex) {
   char input[256];
   while (1) {
@@ -93,16 +92,10 @@ void lab2_querySearch(Document *documents, HashMap *reverseIndex) {
       continue;
     }
 
-    // NOTA: Mejora en la eficiencia al añadir la consulta.
-    // Antes: addLastQuery(initQueryFromString(input));
-    // Ahora: se crea una copia de 'query' si addLastQuery la necesita.
-    // Asumo que addLastQuery ya hace una copia profunda, como lo hacía.
     addLastQuery(initQueryFromString(input)); // Se sigue creando una Query doblemente. Podría optimizarse.
 
 
-    // CAMBIO CLAVE: Usar searchDocumentsWithReverseIndex en lugar de linearSearchDocuments
-    Document *results =
-        searchDocumentsWithReverseIndex(reverseIndex, documents, query, 5); // cerca amb índex invertit
+    Document *results = searchDocumentsWithReverseIndex(reverseIndex, documents, query, 5); // cerca amb índex invertit
     if (results == NULL) {
       printf(
           "No s'ha trobat cap document que coincideixi amb la consulta.\n"); // no trobat
@@ -117,10 +110,10 @@ void lab2_querySearch(Document *documents, HashMap *reverseIndex) {
 
     freeQuery(query); // alliberar consulta
     // También es crucial liberar los 'results' de la búsqueda, ya que son copias.
-    Document *currentResult = results;
+    Document *currentResult = results; // copia dels resultats
     while (currentResult != NULL) {
-        Document *temp = currentResult;
-        currentResult = currentResult->next;
+        Document *temp = currentResult;  
+        currentResult = currentResult->next; 
         freeDocument(temp); // freeDocument libera título, cuerpo, links, y la estructura
     }
   }
@@ -133,41 +126,41 @@ int main() {
     "./datasets/wikipedia540",
     "./datasets/wikipedia5400"
   };
-  int numDatasets = sizeof(datasets) / sizeof(datasets[0]);
+  int numDatasets = sizeof(datasets) / sizeof(datasets[0]); // calcular num de datasets
 
   printf("Selecciona el dataset a carregar:\n");
-  for (int i = 0; i < numDatasets; i++) {
-    printf("%d. %s\n", i + 1, datasets[i]);
+  for (int i = 0; i < numDatasets; i++) { // mostrar datasets
+    printf("%d. %s\n", i + 1, datasets[i]); // imprimir dataset
   }
   printf("Tria una opció (1-%d): ", numDatasets);
 
-  int datasetOption;
-  if (scanf("%d", &datasetOption) != 1 || datasetOption < 1 || datasetOption > numDatasets) {
+  int datasetOption; // opción del dataset
+  if (scanf("%d", &datasetOption) != 1 || datasetOption < 1 || datasetOption > numDatasets) { // comprobar si la entrada es valida
     printf("Opció invàlida. Sortint.\n");
-    return 1;
+    return 1; // si no es valida -> sortirr
   }
   int c; while ((c = getchar()) != '\n' && c != EOF); // netejar buffer
 
-  const char *directoryPath = datasets[datasetOption - 1];
+  const char *directoryPath = datasets[datasetOption - 1]; //seleccionar dataset
 
-  Document *documents = loadAllDocuments(directoryPath); // carregar documents
+  Document *documents = loadAllDocuments(directoryPath); //carregar documents
 
   if (documents == NULL) {
-    printf("No s'han trobat documents al directori especificat o no s'ha pogut obrir el directori.\n"); // error
+    printf("No s'han trobat documents al directori especificat o no s'ha pogut obrir el directori.\n"); //error
     return 1;
   }
 
-  printf("\nDataset carregat: %s\n", directoryPath);
+  printf("\nDataset carregat: %s\n", directoryPath); //mostrar dataset carregat
 
   // NUEVO: Construir el índice invertido después de cargar los documentos
   HashMap *reverseIndex = buildReverseIndex(documents);
   if (reverseIndex == NULL) {
       printf("Error al construir el índice invertido. Saliendo.\n");
       // Liberar documentos si el índice no se pudo construir.
-      Document *current_doc_to_free = documents;
-      while (current_doc_to_free != NULL) {
-          Document *temp = current_doc_to_free;
-          current_doc_to_free = current_doc_to_free->next;
+      Document *doc_actual = documents;
+      while (doc_actual != NULL) {
+          Document *temp = doc_actual; 
+          doc_actual = doc_actual->next;  // va al seguent document
           freeDocument(temp);
       }
       return 1;
@@ -178,42 +171,43 @@ int main() {
     printf("\n--- Menú Principal ---\n");
     printf("1. Mostrar documents\n");
     printf("2. Veure document per índex\n");
-    printf("3. Fer cerca per paraules clau\n"); // Descripción actualizada
+    printf("3. Fer cerca per paraules clau\n"); 
     printf("0. Sortir del programa\n");
     printf("Tria una opció: ");
 
     int option;
-    if (scanf("%d", &option) != 1) {
+    if (scanf("%d", &option) != 1) { 
       printf("Entrada invàlida. Si us plau, introdueix un número.\n");
-      int c_clean; while ((c_clean = getchar()) != '\n' && c_clean != EOF);
-      continue;
+      int c_clean; 
+      while ((c_clean = getchar()) != '\n' && c_clean != EOF); // netejar buffer
+      continue; 
     }
-    int c_clean; while ((c_clean = getchar()) != '\n' && c_clean != EOF); // netejar buffer
+    int c_clean; while ((c_clean = getchar()) != '\n' && c_clean != EOF); // netejar buffer d'entrada per eliminar caràcters sobrants o restants després de llegir l'entrada
 
-    switch (option) {
+    switch (option) { // switch para manejar les opcions
       case 1:
-        lab1_printDocuments(documents);
+        lab1_printDocuments(documents); // LAB1: mostrar documents
         break;
       case 2:
-        showDocumentByIndex(documents);
+        showDocumentByIndex(documents); // veure document per índex
         break;
       case 3:
-        lab2_querySearch(documents, reverseIndex); // Ahora se pasa el índice invertido
+        lab2_querySearch(documents, reverseIndex); // index invertit
         break;
       case 0:
         printf("Sortint del programa. Alliberant memòria...\n");
         // alliberar memoria documents
         Document *current = documents;
         while (current != NULL) {
-          Document *temp = current;
-          current = current->next;
-          freeDocument(temp);
+          Document *temp = current; // per no trencar la llista
+          current = current->next;  //va al seguent document
+          freeDocument(temp); //alliberar memoria del document
         }
-        // NUEVO: Liberar la memoria del hashmap
+        //alliberar la memoria del hashmap
         freeHashMap(reverseIndex);
         exit(0);
       default:
-        printf("Opció desconeguda. Si us plau, tria una opció vàlida.\n");
+        printf("Opció desconeguda. Si us plau, tria una opció vàlida. \n");
     }
   }
 
