@@ -1,54 +1,57 @@
 # Report: Building a search engine like Google 
 **Grup:** Martí Gallego, Marc Bermudo, Marçal Bosch  
 
-## Diagrama C4
+## C4 Component Diagram
 
-A continuació es mostren els continguts del diagrama de components (C4):
+> Volàtil (Memòria): Fa servir el color blau<br>
+> Persistent (arxiu en el disc): Fa servir el color verd
 
-- **Components volàtils (memòria RAM)**  
-    - **CLI Interface**: gestiona la interacció per línia de comandes.  
-    - **Document Loader**: parseja els fitxers i construeix les llistes de documents i enllaços.  
-    - **Query Processor**: inicialitza i processa les consultes de l’usuari.  
-    - **Reverse Index Manager**: construeix i manté en memòria l’índex invers (hashmap).  
-    - **Graph Analyzer**: construeix en memòria el grafs de documents i calcula l’índex de rellevància.
-
-- **Components persistents (disc)**
-    - **Datasets**: ftixers de documents de la wikipedia (format .txt) llegits Document Loader.
-
-
-
---
-
-## Diagrama conexions (C4)
 ```mermaid
----
-config:
-  layout: fixed
----
 flowchart TD
- subgraph s1["Untitled subgraph"]
-        n3["Untitled Node"]
-        n4["Untitled Node"]
-        n5["Untitled Node"]
-  end
-    A["Christmas"] -- Get money --> B("Go shopping")
-    B --> C{"Let me think"}
-    C -- One --> D["Laptop"]
-    C -- Two --> E["iPhone"]
-    C -- Three --> F["fa:fa-car Car"]
-    D --> n1["cpu"]
-    n1 --> n2["Untitled Node"]
-    n2 --> E
-    E --> D & n3
-    n3 --> n4
-    n4 --> n5 & n7["Untitled Node"]
-    n10[" "] --> n11[" "]
-    n6["Cylinder"]
-    n8>"Odd"]
-    n9["Sample Label"]
-    n12["Cylinder"]
-    n10@{ shape: anchor}
-    n11@{ shape: anchor}
-    n6@{ shape: cyl}
-    n9@{ icon: "mc:default", pos: "b"}
-    n12@{ shape: cyl}
+    %% Volatile (Memory) - blue
+    classDef volatile fill:#cce6ff,stroke:#3399ff,color:#003366;
+    %% Persistent (Disk) - green
+    classDef persistent fill:#d6f5d6,stroke:#33cc33,color:#145214;
+
+    subgraph Volatile_Memory["Volatile (Memory)"]
+        DocumentsList["Documents List"]
+        ReverseIndex["Reverse Index (Hashmap)"]
+        QueryList["Query Linked List"]
+        DocumentGraph["Document Graph"]
+        RecentQueries["Queue (Last 3 Queries)"]
+    end
+
+    subgraph Persistent_Storage["Persistent (Disk)"]
+        DatasetFiles["Dataset Files"]
+        ReverseIndexFile["Reverse Index File"]
+        RelevanceCache["Relevance Score Cache"]
+    end
+
+    %% Relations
+    DatasetFiles --> DocumentsList
+    DocumentsList --> ReverseIndex
+    DocumentsList --> DocumentGraph
+    QueryList --> ReverseIndex
+    ReverseIndex --> DocumentsList
+    DocumentGraph --> DocumentsList
+    ReverseIndexFile --> ReverseIndex
+    RelevanceCache --> DocumentGraph
+
+    %% Apply styles
+    class DocumentsList,ReverseIndex,QueryList,DocumentGraph,RecentQueries volatile;
+    class DatasetFiles,ReverseIndexFile,RelevanceCache persistent;
+```
+
+
+## Runtime Complexity Analysis (taula)
+
+
+## Search Time Analysis: With/Without Reverse Index (gràfica)
+
+
+## Initialization Time vs Hashmap Slot Count (gràfica)
+
+
+## Search Time vs Hashmap Slot Count (gràfica)
+
+## Reverse Index Improvement Proposal
