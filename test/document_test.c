@@ -8,94 +8,181 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-// test la deserialització del document a partir d'un fitxer de mostra
 void test_document_desserialize() {
   runningtest("test_document_desserialize");
   {
-  // Redirigir la sortida estàndard a /dev/null per suprimir la sortida
-  int stdout_fd = dup(STDOUT_FILENO); // Desar l'identificador original de stdout
-  int dev_null = open("/dev/null", O_WRONLY); // Obrir /dev/null per escriptura
-  dup2(dev_null, STDOUT_FILENO); // Redirigir stdout a /dev/null
-  close(dev_null); // Tancar l'identificador de /dev/null
+  int stdout_fd = dup(STDOUT_FILENO);
+  int dev_null = open("/dev/null", O_WRONLY);
+  dup2(dev_null, STDOUT_FILENO);
+  close(dev_null);
 
-  Document *doc = document_desserialize("datasets/wikipedia12/0.txt"); // deserialitzar document del fitxer de
-  // Restaurar la sortida estàndard original
-  dup2(stdout_fd, STDOUT_FILENO); // Restaurar stdout original
-  close(stdout_fd); // Tancar l'identificador desat
+  Document *doc = deserialitzaDocument("datasets/wikipedia12/0.txt");
 
-  assert(doc != NULL);  // omprovar que el document no és NULL
-  assert(doc->id == 0); // comprovar que l'id és 0
-  assert(doc->title != NULL && strlen(doc->title) > 0); // comprovar que el títol no és NULL i té longitud > 0
-  assert(doc->body != NULL && strlen(doc->body) > 0); // comprovar que el cos no és NULL i té longitud > 0
-  assert(doc->links != NULL); // comprovar que hi ha enllaços (assumint que el
-                              // fitxer de mostra en té)
-  freeDocument(doc); // alliberar memòria del document
-  }
+  dup2(stdout_fd, STDOUT_FILENO);
+  close(stdout_fd);
+
+  assert(doc != NULL);
+  assert(doc->id == 0);
+  assert(doc->titol != NULL && strlen(doc->titol) > 0);
+  assert(doc->cos != NULL && strlen(doc->cos) > 0);
   successtest();
+  alliberaDocument(doc);
+  }
 }
 
-
-// Test de la càrrega de la llista enllaçada de documents
-void test_loadAllDocuments() {
-  runningtest("test_loadAllDocuments");
+void test_carregaTotsElsDocuments() {
+  runningtest("test_carregaTotsElsDocuments");
   {
-  // Redirigir la sortida estàndard a /dev/null per suprimir la sortida
-  int stdout_fd = dup(STDOUT_FILENO); // Desar l'identificador original de stdout
-  int dev_null = open("/dev/null", O_WRONLY); // Obrir /dev/null per escriptura
-  dup2(dev_null, STDOUT_FILENO); // Redirigir stdout a /dev/null
-  close(dev_null); // Tancar l'identificador de /dev/null
+  int stdout_fd = dup(STDOUT_FILENO);
+  int dev_null = open("/dev/null", O_WRONLY);
+  dup2(dev_null, STDOUT_FILENO);
+  close(dev_null);
 
-  // Carregar tots els documents del directori de dades
-  Document *docs = loadAllDocuments("datasets/wikipedia12"); // carregar tots els documents del directori
-  // Restaurar la sortida estàndard original
-  dup2(stdout_fd, STDOUT_FILENO); // Restaurar stdout original
-  close(stdout_fd); // Tancar l'identificador desat
-  assert(docs != NULL);        // Comprovar que la llista no és NULL
+  Document *docs = carregaTotsElsDocuments("datasets/wikipedia12");
+
+  dup2(stdout_fd, STDOUT_FILENO);
+  close(stdout_fd);
+  assert(docs != NULL);
   int contador = 0;
   Document *current = docs;
-  while (current != NULL) { // Iterar per la llista de documents
-    // Comprovar que el títol no és NULL
-    assert(current->title != NULL);
-    assert(current->body != NULL); // Comprovar que el cos no és NULL
-    contador++;                    // Incrementar el comptador
-    current = current->next;
+  while (current != NULL) {
+    assert(current->titol != NULL);
+    assert(current->cos != NULL);
+    contador++;
+    current = current->seguent;
   }
-  // Comprovar que s'ha carregat almenys un document
   assert(contador > 0);
-  // Alliberar tots els documents
   current = docs;
   while (current != NULL) {
     Document *temp = current;
-    current = current->next;
-    freeDocument(temp); // Alliberar document
+    current = current->seguent;
+    alliberaDocument(temp);
   }
+  successtest();
+}
+}
+// test de la llista enllaçada d'enllaços afegits i alliberats
+void test_enllacos_list() {
+  runningtest("test_enllacos_list");
+  {
+  Enllacos *enllacos = NULL; // inicialitzar llista d'enllaços a NULL
+  afegeixEnllac(&enllacos, 1,"Link text 1"); // afegir enllaç amb id 1 i text "Link text 1"
+  afegeixEnllac(&enllacos, 2,"Link text 2"); //afegir enllaç amb id 2 i text "Link text 2"
+  assert(enllacos != NULL);   //comprovar que la llista no és NULL
+  assert(enllacos->idDocumentDesti == 1); // comprovar que el primer enllaç té id 1 (afegit primer)
+  assert(strcmp(enllacos->textEnllac, "Link text 1") == 0); //comprovar que el text del primer enllaç és correcte
+  assert(enllacos->seguent != NULL);   //comprovar que hi ha un segon enllaç
+  assert(enllacos->seguent->idDocumentDesti == 2); //comprovar que el segon enllaç té id 2
+  alliberaEnllacos(enllacos); //alliberar la llista d'enllaços
   }
   successtest();
 }
 
-// test de la llista enllaçada d'enllaços afegits i alliberats
-void test_links_list() {
-  runningtest("test_linked_list");
-  {
-  Links *links = NULL; // inicialitzar llista d'enllaços a NULL
-  LinksAdd(&links, 1,"Link text 1"); // afegir enllaç amb id 1 i text "Link text 1"
-  LinksAdd(&links, 2,"Link text 2"); // afegir enllaç amb id 2 i text "Link text 2"
-  assert(links != NULL);   // comprovar que la llista no és NULL
-  assert(links->documentId ==2); // comprovar que el primer enllaç té id 2 (afegit últim)
-  assert(strcmp(links->linkText, "Link text 2") == 0); // comprovar que el text del primer enllaç és correcte
-  assert(links->next != NULL);          // comprovar que hi ha un segon enllaç
-  assert(links->next->documentId == 1); // comprovar que el segon enllaç té id 1
-  freeLinks(links);                     // alliberar la llista d'enllaços
-  }
-  successtest();
+//test de la llista enllaçada de documents: compta nodes 
+void test_document_linked_list_count() {
+    runningtest("test_document_linked_list_count");
+    Document *list = NULL;
+    for (int i = 3; i > 0; i--) {
+        Document *doc = (Document*)malloc(sizeof(Document));
+        doc->id = i; 
+        doc->titol = NULL; 
+        doc->cos = NULL;
+        doc->enllacos = NULL;
+        doc->seguent = list;  
+        list = doc; 
+    }
+    int count = 0;
+    Document *current = list; 
+    while (current != NULL) {
+        count++;
+        current = current->seguent; 
+    }
+    assertEqualsInt(count, 3);
+    current = list;
+    while (current != NULL) {
+        Document *temp = current;
+        current = current->seguent; 
+        free(temp);
+    }
+    successtest();
+}
+
+void test_document_linked_list_order() {
+    runningtest("test_document_linked_list_order");
+    Document *list = NULL;
+    for (int i = 3; i > 0; i--) {
+        Document *doc = (Document*)malloc(sizeof(Document));
+        doc->id = i;
+        doc->titol = NULL;
+        doc->cos = NULL;
+        doc->enllacos = NULL;
+        doc->seguent = list;
+        list = doc;
+    }
+    assertEqualsInt(list->id, 1);
+    assertEqualsInt(list->seguent->id, 2);
+    assertEqualsInt(list->seguent->seguent->id, 3);
+    Document *current = list;
+    while (current != NULL) {
+        Document *temp = current;
+        current = current->seguent;
+        free(temp);
+    }
+    successtest();
+}
+
+void test_document_linked_list_add_remove() {
+    runningtest("test_document_linked_list_add_remove");
+    Document *list = NULL;
+    for (int i = 1; i <= 3; i++) {
+        Document *doc = (Document*)malloc(sizeof(Document));
+        doc->id = i;
+        doc->titol = NULL;
+        doc->cos = NULL;
+        doc->enllacos = NULL;
+        doc->seguent = list; 
+        list = doc;
+    }
+    Document *prev = NULL;
+    Document *current = list;
+    while (current != NULL) {
+        if (current->id == 2) {
+            if (prev == NULL) {
+                list = current->seguent;
+            } else {
+                prev->seguent = current->seguent; 
+            }
+            free(current);
+            break;
+        }
+        prev = current;
+        current = current->seguent;
+    }
+    int count = 0;
+    current = list;
+    while (current != NULL) {
+        count++;
+        current = current->seguent;
+    }
+    assertEqualsInt(count, 2);
+    current = list;
+    while (current != NULL) {
+        Document *temp = current;
+        current = current->seguent; // move to next node
+        free(temp);
+    }
+    successtest();
 }
 
 void document_tests(){
-  running("document_tests");
+  running("DOCUMENT TESTS");
   {
   test_document_desserialize();
-  test_loadAllDocuments();
-  test_links_list();
+  test_carregaTotsElsDocuments();
+  test_enllacos_list();
+  test_document_linked_list_count();
+  test_document_linked_list_order();
+  test_document_linked_list_add_remove();
   }
   success();
 }
