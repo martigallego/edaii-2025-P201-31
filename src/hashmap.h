@@ -1,54 +1,60 @@
 #ifndef HASHMAP_H
 #define HASHMAP_H
 
-#include <stddef.h> //def tipus de dades i macros 
-#include "document.h" //estructura Document
+#include <stddef.h> // Per a size_t
+#include "document.h" // Necessari per a l'estructura Document
 
-//estructura per a la llista d'IDs de documents (dins de cada entrada del hashmap)
-//cada node emmagatzema un ID de document on apareix una paraula
-typedef struct DocumentIdNode {
-    int documentId;               //ID docu
-    struct DocumentIdNode *next;  //punter al següent node de la llista
-} DocumentIdNode;
+// --- Estructura per a la llista d'IDs de documents (dins de cada entrada del hashmap) ---
+// Cada node emmagatzema un ID de document on apareix una paraula
+typedef struct NodeIdDocument {
+    int idDocument;               // ID del document
+    struct NodeIdDocument *seguent;  // Punter al següent node de la llista
+} NodeIdDocument;
 
-//Estructura per a una entrada al Hashmap
-//mapeja una paraula (keyword) a una llista de DocumentIdNode (on apareix la paraula)
+// --- Estructura per a una entrada al Hashmap ---
+// Mapeja una paraula (paraulaClau) a una llista de NodeIdDocument (on apareix la paraula)
 typedef struct EntradaHash {
-    char *word;                  //la paraula (clau del hashmap)
-    DocumentIdNode *docIds;      //llista enllaçada d'IDs de documents on es troba la paraula
-    struct EntradaHash *next;      //punter per a manejar col·lisions (encadenament)
+    char *paraula;                  // La paraula (clau del hashmap)
+    NodeIdDocument *idsDocuments;      // Llista enllaçada d'IDs de documents on es troba la paraula
+    struct EntradaHash *seguent;      // Punter per a manejar col·lisions (encadenament)
 } EntradaHash;
 
 // --- Estructura per al Hashmap complet ---
 typedef struct HashMap {
-    EntradaHash **entrades;        //array de punters a EntradaHash (les "cubetes" del hashmap)
-    size_t size;                //mida de l'array de punters (nombre de cubetes)
-    size_t num_elements;        //num total de paraules úniques emmagatzemades
+    EntradaHash **entrades;        // Array de punters a EntradaHash (les "cubetes" del hashmap)
+    size_t mida;                // Mida de l'array de punters (nombre de cubetes)
+    size_t num_elements;        // Nombre total de paraules úniques emmagatzemades
 } HashMap;
 
 
-//Declaracions de funcions del Hashmap
+// --- Declaracions de funcions del Hashmap ---
 
-HashMap *createHashMap(size_t size); //inicialitza un nou hashmap amb una mida donada
+// Inicialitza un nou hashmap amb una mida donada
+HashMap *creaHashMap(size_t mida);
 
-void freeHashMap(HashMap *map); //allibera tota la memòria associada al hashmap
- 
-unsigned int hash(const char *word, size_t map_size); //funció hash per convertir una paraula en un índex
+// Allibera tota la memòria associada al hashmap
+void alliberaHashMap(HashMap *mapa);
 
-// Insereix un ID de document a la llista d'IDs d'una paraula, crea la paraula al hashmap si no existeix.
-void introduir_paraula_hashmap(HashMap *map, const char *word, int documentId);
+// Funció hash per convertir una paraula en un índex
+unsigned int hash(const char *paraula, size_t mida_mapa);
 
-//normalitza una paraula (a minúscules i elimina caràcters no alfanumèrics)
-char *normalitzar_paraula(const char *word);
+// Insereix un ID de document a la llista d'IDs d'una paraula.
+// Crea la paraula al hashmap si no existeix.
+void insereixParaulaEnHashMap(HashMap *mapa, const char *paraula, int idDocument);
 
-HashMap *buildReverseIndex(Document *documents); //Construeix l'índex invertit a partir de la llista de documents
+// Normalitza una paraula (a minúscules i elimina caràcters no alfanumèrics)
+char *normalitzaParaula(const char *paraula);
 
-DocumentIdNode *trobar_paraula_hashmap(HashMap *map, const char *word); // construeix el index invertit a partir de la llista de documents
+// Construeix l'índex invertit a partir de la llista de documents
+HashMap *construeixIndexInvertit(Document *documents);
 
-//funció auxiliar per alliberar una llista de DocumentIdNode
-void freeDocumentIdList(DocumentIdNode *head);
+// Cerca una paraula al hashmap i retorna la llista d'IDs de documents associada
+NodeIdDocument *trobaParaulaEnHashMap(HashMap *mapa, const char *paraula);
 
-// Funció auxiliar per afegir un ID a una llista de DocumentIdNode (evitant duplicats)
-DocumentIdNode *addDocumentId(DocumentIdNode *head, int documentId);
+// Funció auxiliar per alliberar una llista de NodeIdDocument
+void alliberaLlistaIdsDocuments(NodeIdDocument *cap);
+
+// Funció auxiliar per afegir un ID a una llista de NodeIdDocument (evitant duplicats)
+NodeIdDocument *afegeixIdDocument(NodeIdDocument *cap, int idDocument);
 
 #endif // HASHMAP_H

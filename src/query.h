@@ -1,26 +1,36 @@
-#ifndef QUERY_H
-#define QUERY_H
+#ifndef CONSULTA_H
+#define CONSULTA_H
 
+// Inclou definicions de l'estructura Document
 #include "document.h"
+// Inclou definicions per a la taula de hash utilitzada com a índex invertit
 #include "hashmap.h"
 
-typedef struct Query {
-  char *keyword;
-  struct Query *next;
-} Query;
+// Estructura que representa una consulta amb una paraula clau
+typedef struct Consulta {
+  char *paraulaClau;          // Paraula clau de la consulta
+  struct Consulta *seguent;     // Punter a la següent consulta (llista enllaçada)
+} Consulta;
 
-Query *initQueryFromString(const char *input);
-void freeQuery(Query *query);
+// Inicialitza una estructura Consulta a partir d'una cadena d'entrada
+Consulta *iniciaConsultaDesDeString(const char *entrada);
 
-// Esta función será reemplazada/mejorada por la nueva búsqueda
-// Document *linearSearchDocuments(Document *documents, Query *query, int maxResults);
+// Allibera la memòria d'una estructura Consulta
+void alliberaConsulta(Consulta *consulta);
 
-// Nueva función de búsqueda que utiliza el índice invertido
-Document *searchDocumentsWithReverseIndex(HashMap *reverseIndex, Document *allDocuments, Query *query, int maxResults);
+// Aquesta funció ja no s'utilitza; substituïda per una versió millorada
+// Document *cercaDocumentsLineal(Document *documents, Consulta *consulta, int maxResultats);
 
-void printDocuments(Document *documents);
+// Cerca documents utilitzant l'índex invertit i una llista de consultes
+Document *cercaDocumentsAmbIndexInvertit(HashMap *indexInvertit, Document *totsElsDocuments, Consulta *consulta, int maxResultats);
 
-void addLastQuery(Query *query);
-void showLastQueries(void);
+// Imprimeix una llista de documents (ID, títol, etc.)
+void imprimeixDocuments(Document *documents);
 
-#endif // QUERY_H
+// Desa la consulta més recent en una llista d’historial
+void afegeixUltimaConsulta(Consulta *consulta);
+
+// Mostra les últimes consultes realitzades
+void mostraUltimesConsultes(void);
+
+#endif // CONSULTA_H
