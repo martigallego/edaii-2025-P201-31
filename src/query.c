@@ -3,7 +3,8 @@
 #include <stdlib.h>   
 #include <string.h>   
 #include <ctype.h>    
-#include "document.h" 
+#include "document.h"
+#include "time.h" // Per la funció de calcular el temps 
 
 // Funció auxiliar per crear un nou node de l'estructura Consulta.
 // Aquesta funció s'utilitza internament per construir la llista enllaçada de paraules clau.
@@ -376,4 +377,99 @@ void mostraUltimesConsultes(void) {
         }
     }
     printf("*********************************\n");
+}
+
+// PER EL REPORT: 
+
+// Versió simplificada de cerca lineal (SENSE reverse-index)
+// Funció que cerca documents que continguin totes les paraules clau de la consulta, sense utilitzar un índex invertit
+Document *cercaDocumentsSenseIndex(Document *documents, Consulta *consulta, int maxResultats) {
+    if (!documents || !consulta) return NULL; // Retorna NULL si no hi ha documents o consulta
+
+    Document *resultats = NULL; // Llista de resultats inicialment buida
+    Document *ultim = NULL;     // Punter a l'últim document afegit a la llista de resultats
+    int comptador = 0;          // Comptador de resultats trobats
+
+    Document *docActual = documents; // Punter al document actual de la llista
+    while (docActual != NULL && (maxResultats <= 0 || comptador < maxResultats)) {
+        int totesTrobades = 1; // Indicador de si totes les paraules de la consulta han estat trobades
+        Consulta *q = consulta; // Punter a la paraula clau actual de la consulta
+        while (q != NULL) {
+            char *paraulaNormalitzada = normalitzaParaula(q->paraulaClau); // Normalitza la paraula clau
+            if (!paraulaNormalitzada || 
+                (!strcasestr_contiene(docActual->titol, paraulaNormalitzada) && 
+                 !strcasestr_contiene(docActual->cos, paraulaNormalitzada))) {
+                // Si la paraula no és trobada ni al títol ni al cos, marquem com a no trobada
+                totesTrobades = 0;
+                if (paraulaNormalitzada) free(paraulaNormalitzada); // Alliberem memòria
+                break; // Sortim del bucle de consulta
+            }
+            free(paraulaNormalitzada); // Alliberem memòria
+            q = q->seguent; // Passem a la següent paraula clau
+        }
+        if (totesTrobades) { // Si totes les paraules han estat trobades
+            Document *copia = (Document *)malloc(sizeof(Document)); // Reservem memòria per una còpia del document
+            copia->id = docActual->id; // Copiem l'ID
+            copia->titol = strdup(docActual->titol); // Copiem el títol
+            copia->cos = strdup(docActual->cos); // Copiem el cos
+            copia->seguent = NULL; // Inicialitzem el següent com a NULL
+            if (!resultats) resultats = copia; // Si és el primer resultat, inicialitzem la llista
+            else ultim->seguent = copia; // Si no, l'afegim al final de la llista
+            ultim = copia; // Actualitzem el punter a l'últim
+            comptador++; // Incrementem el comptador
+        }
+        docActual = docActual->seguent; // Passem al següent document
+    }
+    return resultats; // Retornem la llista de resultats
+}
+
+// Funció que compara el temps d'execució entre la cerca amb índex invertit i la cerca sense índex
+void comparaMetodesBusqueda(HashMap *indexInvertit, Document *documents, Consulta *consulta) {
+    clock_t start, end; // Variables per guardar el temps d'inici i fi
+    double tempsAmbIndex, tempsSenseIndex; // Temps en mil·lisegons per a cada mètode
+
+    // --- Búsqueda AMB reverse-index ---
+    start = clock(); // Inici del cronòmetre
+    Document *resultatsAmbIndex = cercaDocumentsAmbIndexInvertit(indexInvertit, documents, consulta, 5); // Cerca amb índex invertit
+    end = clock(); // Final del cronòmetre
+    tempsAmbIndex = ((double)(end - start)) / CLOCKS_PER_SEC * 1000; // Converteix a mil·lisegons
+
+    if (resultatsAmbIndex) {
+        printf("[Amb reverse-index] Temps: %.2f ms\n", tempsAmbIndex); // Mostra el temps per la cerca amb índex
+
+        // Allibera memòria dels resultats
+        Document *temp = resultatsAmbIndex;
+        while (temp) {
+            Document *next = temp->seguent; // Guarda el següent
+            free(temp->titol); // Allibera el títol
+            free(temp->cos);   // Allibera el cos
+            free(temp);        // Allibera el document
+            temp = next;       // Passa al següent
+        }
+    }
+
+    // --- Búsqueda SENSE reverse-index ---
+    start = clock(); // Inici del cronòmetre
+    Document *resultatsSenseIndex = cercaDocumentsSenseIndex(documents, consulta, 5); // Cerca sense índex
+    end = clock(); // Final del cronòmetre
+    tempsSenseIndex = ((double)(end - start)) / CLOCKS_PER_SEC * 1000; // Converteix a mil·lisegons
+
+    if (resultatsSenseIndex) {
+        printf("[Sense reverse-index] Temps: %.2f ms\n", tempsSenseIndex); // Mostra el temps per la cerca sense índex
+
+        // Allibera memòria dels resultats
+        Document *temp = resultatsSenseIndex;
+        while (temp) {
+            Document *next = temp->seguent; // Guarda el següent
+            free(temp->titol); // Allibera el títol
+            free(temp->cos);   // Allibera el cos
+            free(temp);        // Allibera el document
+            temp = next;       // Passa al següent
+        }
+    }
+
+    if (resultatsAmbIndex && resultatsSenseIndex) {
+        double diferencia_ms = tempsSenseIndex - tempsAmbIndex; // Calcula la diferència de temps
+        printf("Diferència: %.2f ms\n", diferencia_ms); // Mostra la diferència de temps
+    }
 }

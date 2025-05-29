@@ -33,4 +33,7 @@ void afegeixUltimaConsulta(Consulta *consulta);
 // Mostra les últimes consultes realitzades
 void mostraUltimesConsultes(void);
 
+// Funció per comparar temps de cerca amb / sense reverse-index
+void comparaMetodesBusqueda(HashMap *indexInvertit, Document *documents, Consulta *consulta);
+
 #endif // CONSULTA_H

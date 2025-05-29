@@ -81,7 +81,7 @@ void lab2_querySearch(Document *documents, HashMap *indexInvertit) { // 'reverse
             printf("Consulta invàlida.\n");
             continue;
         }
-
+        comparaMetodesBusqueda(indexInvertit, documents, consulta); // comparar mètodes de cerca index invertit i sense index
         afegeixUltimaConsulta(iniciaConsultaDesDeString(entrada)); // 'addLastQuery' -> 'afegeixUltimaConsulta'
 
         Document *resultats = cercaDocumentsAmbIndexInvertit(indexInvertit, documents, consulta, 5); // 'results' -> 'resultats', 'searchDocumentsWithReverseIndex' -> 'cercaDocumentsAmbIndexInvertit'
