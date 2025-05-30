@@ -161,6 +161,20 @@ int main() {
     }
 
     GrafDirigit *graf = construirGrafDirigitDeDocuments(documents);
+    // DEBUG: imprimir estat del graf
+printf("\n--- Verificació de nodes i arestes del graf ---\n");
+for (size_t i = 0; i < graf->mida; i++) {
+    NodeGrau *n = graf->nodes[i];
+    while (n != NULL) {
+        printf("Node ID %d -> Entrants: %d | Sortints: %d | Rellevància: %.2f\n",
+               n->idDocument,
+               n->grauEntrant,
+               n->grauSortint,
+               n->puntuacioRellevancia);
+        n = n->seguent;
+    }
+}
+printf("--- Fi de la verificació ---\n");
 
     while (1) {
         printf("\n--- Menú Principal ---\n");
