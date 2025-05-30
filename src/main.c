@@ -81,21 +81,38 @@ void lab2_querySearch(Document *documents, HashMap *indexInvertit, GrafDirigit *
             printf("Consulta invàlida.\n");
             continue;
         }
+
+        // Compara temps amb i sense índex invertit
         comparaMetodesBusqueda(indexInvertit, documents, consulta);
+
+        // Desa consulta a historial
         afegeixUltimaConsulta(iniciaConsultaDesDeString(entrada));
 
+        // Cerca els documents amb l'índex invertit
         Document *resultats = cercaDocumentsAmbIndexInvertit(indexInvertit, documents, consulta, 1000);
+
         if (resultats == NULL) {
             printf("No s'ha trobat cap document.\n");
         } else {
             printf("\n--- Resultats de la cerca ---\n");
             imprimirDocumentsPerRellevancia(graf, resultats, 10);
+
+            // 🔽 AFEGIT: imprimir també el cos dels documents trobats
+            Document *d = resultats;
+            while (d != NULL) {
+                printf("\n--- Document ID: %d ---\n", d->id);
+                printf("Títol: %s\n", d->titol);
+                printf("Cos complet:\n%s\n", d->cos);
+                d = d->seguent;
+            }
+
             printf("----------------------------\n");
         }
 
         mostraUltimesConsultes();
         alliberaConsulta(consulta);
 
+        // Allibera la llista de documents resultants
         Document *resultatActual = resultats;
         while (resultatActual != NULL) {
             Document *temp = resultatActual;
@@ -104,6 +121,7 @@ void lab2_querySearch(Document *documents, HashMap *indexInvertit, GrafDirigit *
         }
     }
 }
+
 
 int main() {
     const char *datasets[] = {
