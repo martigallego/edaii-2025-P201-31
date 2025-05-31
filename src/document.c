@@ -85,113 +85,143 @@ void afegeixEnllac(Enllacos **cap, int idDocumentDesti, const char *textEnllac)
 Document *deserialitzaDocument(char *camins)
 {
     FILE *file = fopen(camins, "r"); // Obre el fitxer en mode lectura
-    if (!file)
-    {
+    if (!file) {
         perror("No s'ha pogut obrir el fitxer del document");
         return NULL; // Retorna NULL si no s'ha pogut obrir
     }
 
-    Document *document = (Document *)malloc(sizeof(Document)); // Reserva memòria pel document
-    if (!document)
-    {
+    Document *document = malloc(sizeof(Document)); // Reserva memòria pel document
+    if (!document) {
         perror("Error en assignar memòria per al document");
         fclose(file); // Tanca fitxer abans de sortir
         return NULL;
     }
 
-    memset(document, 0, sizeof(Document)); // Inicialitza el contingut del document a 0
 
-    char buffer[2048]; // Buffer per llegir línies
-
-    // Llegeix l’ID del document
-    if (fgets(buffer, sizeof(buffer), file) == NULL || sscanf(buffer, "%d", &document->id) != 1)
-    {
-        fprintf(stderr, "Error llegint ID del document en %s\n", camins);
-        alliberaDocument(document); // Allibera memòria
-        fclose(file);               // Tanca fitxer
+    // Llegir l’ID del document
+    if (fscanf(file, "%d\n", &document->id) != 1) {
+        fprintf(stderr, "Format d'ID incorrecte: %s\n", camins);
+        free(document); // Allibera memòria si l'ID no és vàlid
+        fclose(file);   // Tanca fitxer
         return NULL;
     }
 
-    // Llegeix el títol del document
-    if (fgets(buffer, sizeof(buffer), file) == NULL)
-    {
-        fprintf(stderr, "Error llegint títol del document en %s\n", camins);
-        alliberaDocument(document);
+    // Llegir el títol del document
+    // Utilitza getline per gestionar longituds variables
+    size_t len_titol = 0;
+    document->titol = NULL;
+    if (getline(&document->titol, &len_titol, file) == -1) {
+        perror("Error llegint el títol");
+        free(document);
         fclose(file);
         return NULL;
     }
+    // Elimina salt de línia final, si n'hi ha
+    if (document->titol[strlen(document->titol) - 1] == '\n')
+        document->titol[strlen(document->titol) - 1] = '\0';
 
-    char *title_prefix_str = "Title: "; // Prefix opcional al títol
-    if (strncmp(buffer, title_prefix_str, strlen(title_prefix_str)) == 0)
-        document->titol = strdup(buffer + strlen(title_prefix_str)); // Elimina prefix si hi és
-    else
-        document->titol = strdup(buffer); // Copia tal qual
+    // Llegir tot el "cos" en un buffer dinàmic (cos_acumulat)
+    size_t buffer_cap = 4096;                      // Capacitat inicial del buffer
+    size_t cos_len = 0;                            // Longitud acumulada del cos
+    char *cos_acumulat = malloc(buffer_cap);       // Reserva memòria inicial
+    if (!cos_acumulat) {
+        perror("Error assignant memòria per al cos");
+        free(document->titol);
+        free(document);
+        fclose(file);
+        return NULL;
+    }
+    cos_acumulat[0] = '\0'; // Inicia cadena buida
 
-    document->titol[strcspn(document->titol, "\n")] = 0; // Elimina salt de línia final
+    char line[1024]; // Buffer d'entrada per a cada línia
+    while (fgets(line, sizeof(line), file)) {
+        size_t l = strlen(line); // Mida de la línia llegida
+        if (cos_len + l + 1 > buffer_cap) {               // Si s'excedeix la capacitat
+            buffer_cap *= 2;                              // Duplica la capacitat
+            char *tmp = realloc(cos_acumulat, buffer_cap); // Reassigna memòria
+            if (!tmp) {
+                perror("Error reassignant memòria per al cos");
+                free(cos_acumulat);
+                free(document->titol);
+                free(document);
+                fclose(file);
+                return NULL;
+            }
+            cos_acumulat = tmp; // Assigna el nou punter
+        }
+        memcpy(cos_acumulat + cos_len, line, l); // Copia la línia al final del buffer
+        cos_len += l;                            // Actualitza la longitud
+        cos_acumulat[cos_len] = '\0';            // Assegura final de cadena
+    }
+    // Elimina salts de línia i espais finals del cos
+    while (cos_len > 0 && (cos_acumulat[cos_len - 1] == '\n' || cos_acumulat[cos_len - 1] == ' ')) {
+        cos_acumulat[--cos_len] = '\0';
+    }
 
-    char *cos_acumulat = NULL; // Buffer acumulador pel cos
-    size_t cos_len = 0;        // Longitud total
-    char line[2048];           // Buffer temporal per línies
-
-    // Llegeix totes les línies restants del fitxer
-    while (fgets(line, sizeof(line), file))
-    {
-        size_t len = strlen(line); // Mida de la línia llegida
-        cos_acumulat = realloc(cos_acumulat, cos_len + len + 1);
-        if (!cos_acumulat)
-        {
-            perror("Error de realloc per al cos del document");
-            alliberaDocument(document);
+    // Assignar document->cos
+    // Si no hi ha contingut (cos_len == 0), guardem una cadena buida
+    if (cos_len > 0) {
+        document->cos = cos_acumulat; // Assigna el cos acumulat
+    } else {
+        free(cos_acumulat);                    // Allibera buffer si està buit
+        document->cos = strdup("");            // Cadena buida per evitar NULL
+        if (!document->cos) {
+            perror("Error assignant memòria per a cadena buida");
+            free(document->titol);
+            free(document);
             fclose(file);
             return NULL;
-        } // Reassigna memòria
-        strcpy(cos_acumulat + cos_len, line); // Afegeix la línia al final del text acumulat
-        cos_len += len;                       // Actualitza la mida total
-    }
-
-    if (cos_acumulat)
-    {
-        // Elimina espais en blanc i salts de línia finals
-        while (cos_len > 0 && (cos_acumulat[cos_len - 1] == '\n' || cos_acumulat[cos_len - 1] == ' '))
-            cos_acumulat[--cos_len] = '\0';
-        document->cos = cos_acumulat; // Assigna el cos final
-    }
-
-    document->enllacos = NULL; // Inicialitza llista d’enllaços
-
-    // Cerca enllaços dins del cos: format [text](id)
-    char *p = document->cos;
-    while ((p = strchr(p, '[')) != NULL)
-    {                                         // Busca obertura d’enllaç
-        char *endText = strchr(p, ']');       // Fi del text visible
-        char *startId = strchr(endText, '('); // Inici de l’ID
-        char *endId = strchr(startId, ')');   // Fi de l’ID
-
-        if (endText && startId && endId && endText < startId && startId < endId)
-        {
-            char text[1024]; // Text visible
-            char idStr[32];  // ID com a string
-
-            strncpy(text, p + 1, endText - p - 1); // Copia el text entre [ ]
-            text[endText - p - 1] = '\0';
-
-            strncpy(idStr, startId + 1, endId - startId - 1); // Copia l’ID entre ( )
-            idStr[endId - startId - 1] = '\0';
-
-            int id = atoi(idStr); // Converteix ID a enter
-            if (id >= 0)
-                afegeixEnllac(&document->enllacos, id, text); // Afegeix l'enllaç al document
-
-            p = endId + 1; // Continua després del ')'
         }
-        else
-        {
-            break; // Si el format no és vàlid, para
+    }
+
+    // Inicialitzar la llista d’enllaços com a buida
+    document->enllacos = NULL;
+
+    // Cercar enllaços dins del cos (format: [text](id))
+    // Només entrem si document->cos no és cadena buida
+    if (document->cos[0] != '\0') {
+        char *p = document->cos;
+        while ((p = strchr(p, '[')) != NULL) {
+            char *endText = strchr(p, ']'); // Fi del text visible
+            char *startId = NULL;
+            char *endId   = NULL;
+
+            if (endText)
+                startId = strchr(endText, '('); // Inici de l'ID
+            if (startId)
+                endId = strchr(startId, ')');   // Fi de l'ID
+
+            if (endText && startId && endId && endText < startId && startId < endId) {
+                // Extreure el "text" dins dels [ ]
+                size_t lengthText = (size_t)(endText - p - 1);
+                char text[1024];
+                if (lengthText >= sizeof(text))
+                    lengthText = sizeof(text) - 1;                // Limita la mida si es massa gran
+                strncpy(text, p + 1, lengthText);                 // Copia el text
+                text[lengthText] = '\0';
+
+                // Extreure l'ID dins dels parèntesis ( )
+                int lenId = (int)(endId - startId - 1);
+                char idStr[32];
+                if (lenId >= (int)sizeof(idStr))
+                    lenId = (int)sizeof(idStr) - 1;              // Limita la mida si es massa gran
+                strncpy(idStr, startId + 1, (size_t)lenId);     // Copia l'ID
+                idStr[lenId] = '\0';
+
+                int id_dest = atoi(idStr); // Converteix ID a enter
+                if (id_dest >= 0) {
+                    afegeixEnllac(&document->enllacos, id_dest, text); // Afegeix l'enllaç a la llista
+                }
+                p = endId + 1; // Continua després del ')'
+            } else {
+                // Si el format no és vàlid, sortim del bucle
+                break;
+            }
         }
     }
 
     fclose(file);    // Tanca el fitxer
-    return document; // Retorna el document carregat
+    return document; // Retorna el document deserialitzat
 }
 
 // Llegeix tots els documents d’un directori
@@ -212,24 +242,24 @@ Document *carregaTotsElsDocuments(const char *rutaDirectori)
                 continue; // Omet "." i ".."
             }
 
-            char camiComplet[1024]; // Crea ruta completa
+            char camiComplet[1024]; // Crea ruta completa del fitxer
             snprintf(camiComplet, sizeof(camiComplet), "%s/%s", rutaDirectori, ent->d_name);
 
-            Document *document = deserialitzaDocument(camiComplet); // Deserialitza fitxer
+            Document *document = deserialitzaDocument(camiComplet); // Deserialitza el fitxer actual
 
             if (document != NULL)
             {
                 if (documents == NULL)
-                { // Primer document
+                { // Primer document carregat
                     documents = document;
                     ultim = document;
                 }
                 else
                 {
-                    ultim->seguent = document; // Afegeix al final
+                    ultim->seguent = document; // Afegeix el document al final de la llista
                     ultim = document;
                 }
-                documents_carregats_count++; // Suma al comptador
+                documents_carregats_count++; // Incrementa el comptador
             }
             else
             {
@@ -245,5 +275,5 @@ Document *carregaTotsElsDocuments(const char *rutaDirectori)
         return NULL;
     }
 
-    return documents; // Retorna la llista de documents
+    return documents; // Retorna la llista enllaçada de documents
 }
