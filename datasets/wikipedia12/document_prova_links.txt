@@ -1,7 +1,0 @@
-12
-Title: Exemple de document amb enllaços
-Aquest és el contingut principal del document 12. Conté informació rellevant i útil per als usuaris.
-També fa referència a altres documents per ampliar la informació.
-Links:
-3|Veure el document relacionat número 3
-4|Consulta el document 4 per més informació

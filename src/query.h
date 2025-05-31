@@ -8,8 +8,8 @@
 
 // Estructura que representa una consulta amb una paraula clau
 typedef struct Consulta {
-  char *paraulaClau;          // Paraula clau de la consulta
-  struct Consulta *seguent;     // Punter a la següent consulta (llista enllaçada)
+  char *paraulaClau;        // Paraula clau de la consulta
+  struct Consulta *seguent; // Punter a la següent consulta (llista enllaçada)
 } Consulta;
 
 // Inicialitza una estructura Consulta a partir d'una cadena d'entrada
@@ -19,10 +19,13 @@ Consulta *iniciaConsultaDesDeString(const char *entrada);
 void alliberaConsulta(Consulta *consulta);
 
 // Aquesta funció ja no s'utilitza; substituïda per una versió millorada
-// Document *cercaDocumentsLineal(Document *documents, Consulta *consulta, int maxResultats);
+// Document *cercaDocumentsLineal(Document *documents, Consulta *consulta, int
+// maxResultats);
 
 // Cerca documents utilitzant l'índex invertit i una llista de consultes
-Document *cercaDocumentsAmbIndexInvertit(HashMap *indexInvertit, Document *totsElsDocuments, Consulta *consulta, int maxResultats);
+Document *cercaDocumentsAmbIndexInvertit(HashMap *indexInvertit,
+                                         Document *totsElsDocuments,
+                                         Consulta *consulta, int maxResultats);
 
 // Imprimeix una llista de documents (ID, títol, etc.)
 void imprimeixDocuments(Document *documents);
@@ -34,6 +37,7 @@ void afegeixUltimaConsulta(Consulta *consulta);
 void mostraUltimesConsultes(void);
 
 // Funció per comparar temps de cerca amb / sense reverse-index
-void comparaMetodesBusqueda(HashMap *indexInvertit, Document *documents, Consulta *consulta);
+void comparaMetodesBusqueda(HashMap *indexInvertit, Document *documents,
+                            Consulta *consulta);
 
 #endif // CONSULTA_H
