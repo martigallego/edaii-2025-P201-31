@@ -239,24 +239,24 @@ void alliberarGrafDirigit(GrafDirigit *graf) {
 }
 
 Document **ordenaDocumentsPerRellevancia(Document *llista, int *nombre) {
-  // Comptar quants documents hi ha
+  // Comptar quants documents hi ha a la llista enllaçada
   int n = 0;
   Document *temp = llista;
-  while (temp != NULL) {
-    n++;
-    temp = temp->seguent;
+  while (temp != NULL) {     // Recorre la llista fins al final
+    n++;                     // Incrementa el comptador
+    temp = temp->seguent;    // Passa al següent document
   }
-  *nombre = n;
+  *nombre = n;               // Desa el nombre total de documents a la variable que apunta 'nombre'
 
-  // Crear array de punters
-  Document **array = malloc(n * sizeof(Document *));
-  temp = llista;
+  // Crear un array de punters a documents per poder-los ordenar
+  Document **array = malloc(n * sizeof(Document *)); // Reserva memòria per un array de punters a Document
+  temp = llista;                                     // Torna a començar des del primer document
   for (int i = 0; i < n; i++) {
-    array[i] = temp;
-    temp = temp->seguent;
+    array[i] = temp;         // Desa el punter a cada document a l’array
+    temp = temp->seguent;    // Avança al següent document
   }
 
-  // Ordenar amb qsort
+  // Ordenar l'array de documents segons la seva rellevància, de més a menys
   qsort(array, n, sizeof(Document *), compararDocumentsRellevancia);
-  return array;
+  return array;              // Retorna l’array ordenat
 }
