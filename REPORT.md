@@ -36,7 +36,8 @@ S'ha implementat una funció ('comparaMetodesBusqueda') que mesura el temps d'ex
 
 ## Initialization Time vs Hashmap Slot Count (gràfica)
 
-![Temps d'inicialització](TempsHash.png)
+![Temps d'inicialització](https://drive.google.com/uc?export=view&id=1vZCaWLYxyqnYkT3x_VUijFaNVhLS21aJ)
+
 
 El temps d'inicialització disminueix significativament entre 100 i 2000 slots, amb la millora més destacada en wiki540, on el temps baixa de 39.175 ms (a 100 slots) a 3.042 ms (a 2000 slots). Tot i això, en el dataset wiki5400 (únic amb dades per sobre de 100.000 slots), els temps es mantenen estables entre 174.471 - 203.398 ms o augmenten lleugerament, indicant un decreixement quan hi han molts slots.
 
