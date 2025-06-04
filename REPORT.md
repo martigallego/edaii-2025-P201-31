@@ -6,8 +6,7 @@
 > Volàtil (Memòria): Fa servir el color blau<br>
 > Persistent (arxiu en el disc): Fa servir el color verd
 
-![DIAGRAMA C4](C4diagrama.png)
-
+![DIAGRAMA C4](https://drive.google.com/uc?export=view&id=1yOC9r5ETO1kTWDllP1ObMLN0YtWuveRM)
 
 
 ## Runtime Complexity Analysis (taula)
@@ -26,7 +25,7 @@
 
 ## Search Time Analysis: With/Without Reverse Index (gràfica)
 
-![Amb o sense Reverse-Index](Amb-sense.png)
+![Amb o sense Reverse-Index](https://drive.google.com/uc?export=view&id=1eBtaytErL1SZZaMR6AoPD7Qg7-CZAoln)
 
 S'ha implementat una funció ('comparaMetodesBusqueda') que mesura el temps d'execució (en mil·lisegons) de dues estratègies:
 
@@ -43,7 +42,8 @@ El temps d'inicialització disminueix significativament entre 100 i 2000 slots, 
 
 ## Search Time vs Hashmap Slot Count (gràfica)
 
-![Rendiment cerca per mida de taula hash](MidaHash1.png)
+![Rendiment cerca per mida de taula hash](https://drive.google.com/uc?export=view&id=1smPI4NPfcvXgU-w-QiTwLoo9_hbyzteR)
+
 
 El temps de cerca disminueix clarament en passar de 100 a 1000 slots, ja que es redueixen les col·lisions en el hashmap i es millora l’accés a la llista de documents per paraula.
 Tanmateix, a partir de 1000 slots no s’observen millores significatives i fins i tot hi ha petites oscil·lacions, indicant que existeix una mida òptima per al hashmap a partir de la qual afegir més espai no aporta beneficis clars.
