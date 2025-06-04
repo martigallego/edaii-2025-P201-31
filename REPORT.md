@@ -27,7 +27,7 @@
 
 ![Amb o sense Reverse-Index](https://drive.google.com/uc?export=view&id=1eBtaytErL1SZZaMR6AoPD7Qg7-CZAoln)
 
-S'ha implementat una funció ('comparaMetodesBusqueda') que mesura el temps d'execució (en mil·lisegons) de dues estratègies:
+S'ha implementat una funció ('comparaMetodesBusqueda') que mesura el temps d'execució (en mil·lisegons) de dues estratègies utilitzant la funció clock() de <time.h>:
 
 - **Cerca sense índex invertit**: es fa una cerca lineal per tots els documents, comprovant si cada paraula clau apareix en el títol o el cos del document.
 - **Cerca amb índex invertit**: es consulta un 'hashmap' que relaciona cada paraula amb els documents que la contenen, millorant notablement el temps de resposta.
