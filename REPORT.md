@@ -1,5 +1,5 @@
 # Report: Building a search engine like Google 
-**Grup:** Martí Gallego, Marc Bermudo, Marçal Bosch  
+**Grup:** <br> Martí Gallego --> u251445,<br> Marc Bermudo --> u251337,<br> Marçal Bosch --> u251740  
 
 ## C4 Component Diagram
 
