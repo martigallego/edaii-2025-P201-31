@@ -26,7 +26,7 @@
 
 ## Search Time Analysis: With/Without Reverse Index (gràfica)
 
-![Amb o sense Reverse-Index](/img/Amb-sense.png)
+![Amb o sense Reverse-Index](img/Amb-sense.png)
 
 S'ha implementat una funció ('comparaMetodesBusqueda') que mesura el temps d'execució (en mil·lisegons) de dues estratègies:
 
