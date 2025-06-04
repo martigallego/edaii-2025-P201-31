@@ -6,7 +6,7 @@
 > Volàtil (Memòria): Fa servir el color blau<br>
 > Persistent (arxiu en el disc): Fa servir el color verd
 
-![DIAGRAMA C4](img/C4diagrama.png)
+![DIAGRAMA C4](C4diagrama.png)
 
 
 
@@ -26,7 +26,7 @@
 
 ## Search Time Analysis: With/Without Reverse Index (gràfica)
 
-![Amb o sense Reverse-Index](img/Amb-sense.png)
+![Amb o sense Reverse-Index](Amb-sense.png)
 
 S'ha implementat una funció ('comparaMetodesBusqueda') que mesura el temps d'execució (en mil·lisegons) de dues estratègies:
 
@@ -36,13 +36,13 @@ S'ha implementat una funció ('comparaMetodesBusqueda') que mesura el temps d'ex
 
 ## Initialization Time vs Hashmap Slot Count (gràfica)
 
-![Temps d'inicialització](img/TempsHash.png)
+![Temps d'inicialització](TempsHash.png)
 
 El temps d'inicialització disminueix significativament entre 100 i 2000 slots, amb la millora més destacada en wiki540, on el temps baixa de 39.175 ms (a 100 slots) a 3.042 ms (a 2000 slots). Tot i això, en el dataset wiki5400 (únic amb dades per sobre de 100.000 slots), els temps es mantenen estables entre 174.471 - 203.398 ms o augmenten lleugerament, indicant un decreixement quan hi han molts slots.
 
 ## Search Time vs Hashmap Slot Count (gràfica)
 
-![Rendiment cerca per mida de taula hash](img/MidaHash1.png)
+![Rendiment cerca per mida de taula hash](MidaHash1.png)
 
 El temps de cerca disminueix clarament en passar de 100 a 1000 slots, ja que es redueixen les col·lisions en el hashmap i es millora l’accés a la llista de documents per paraula.
 Tanmateix, a partir de 1000 slots no s’observen millores significatives i fins i tot hi ha petites oscil·lacions, indicant que existeix una mida òptima per al hashmap a partir de la qual afegir més espai no aporta beneficis clars.
