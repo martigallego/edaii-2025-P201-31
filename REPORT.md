@@ -38,7 +38,8 @@ S'ha implementat una funció ('comparaMetodesBusqueda') que mesura el temps d'ex
 ![Temps d'inicialització](https://drive.google.com/uc?export=view&id=1vZCaWLYxyqnYkT3x_VUijFaNVhLS21aJ)
 
 
-El temps d'inicialització disminueix significativament entre 100 i 2000 slots, amb la millora més destacada en wiki540, on el temps baixa de 39.175 ms (a 100 slots) a 3.042 ms (a 2000 slots). Tot i això, en el dataset wiki5400 (únic amb dades per sobre de 100.000 slots), els temps es mantenen estables entre 174.471 - 203.398 ms o augmenten lleugerament, indicant un decreixement quan hi han molts slots.
+El temps d’inicialització disminueix significativament entre 100 i 2000 slots perquè augmentar els slots redueix les col·lisions i accelera la inserció d’entrades al hashmap (per exemple, en wiki540 baixa de 39.175 ms a 3.042 ms). Tot i això, en wiki5400 (amb slots per sobre de 100 000), el cost addicional de gestionar tants slots fa que els temps es mantinguin al voltant de 174 000–203 000 ms o fins i tot augmentin lleugerament (rendiments decreixents).
+
 
 ## Search Time vs Hashmap Slot Count (gràfica)
 
@@ -46,7 +47,7 @@ El temps d'inicialització disminueix significativament entre 100 i 2000 slots, 
 
 
 El temps de cerca disminueix clarament en passar de 100 a 1000 slots, ja que es redueixen les col·lisions en el hashmap i es millora l’accés a la llista de documents per paraula.
-Tanmateix, a partir de 1000 slots no s’observen millores significatives i fins i tot hi ha petites oscil·lacions, indicant que existeix una mida òptima per al hashmap a partir de la qual afegir més espai no aporta beneficis clars.
+Tanmateix, a partir de 1000 slots no s’observen millores importants i fins i tot hi ha petites oscil·lacions, indicant que existeix una mida òptima per al hashmap a partir de la qual afegir més espai no aporta beneficis clars.
 
 ## Reverse Index Improvement Proposal
 
