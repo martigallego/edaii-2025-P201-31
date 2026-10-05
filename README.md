@@ -1,212 +1,103 @@
-![Unit Tests](https://github.com/martigallego/edaii-2025--P201---31-)
+# EDA II — Search Engine in C
 
-> [!NOTE]  
-> Remember to change the link above to match your GitHub username and repository name. Then, remove this comment.
+A search-engine project developed for the Data Structures and Algorithms II (EDA II) coursework at Universitat Pompeu Fabra (UPF).
 
-# Authors
+The project implements a document search system in C, focusing on data structures, hashing, graph representation, reverse indexing, testing and performance analysis.
 
-Group number: P201, 31
+## Project overview
 
-- marti.gallego01@estudiant.upf.edu
-- marc.bermudo01@estudiant.upf.edu
-- marcal.bosch01@estudiant.upf.edu 
+The program processes a collection of documents and supports keyword-based searches over their content.
 
-# Plagiarism Disclaimer
-- You **MUST NOT** look at anyone else's solutions, including previous year students and external tutors.
-- You **MUST** make your repository private.
-- You **MAY** discuss the assignments with other students, but you may not look at or copy each others' code.
-- You **MUST** commit frequently to the repository (at least 1 commit per exercise).
-- You **MUST NOT** share your code with other students even if they ask you to.
-- You **MUST** add a link next to any code you copy from external sources.
-- You **MUST NOT** ask other students for their project or fragments of their code.
+The implementation includes:
 
-# Repository Contents
+- Document parsing and serialization
+- Query parsing
+- Dynamic data structures
+- A document graph based on links between documents
+- Hash tables for efficient lookup
+- A reverse index mapping keywords to document IDs
+- Keyword intersection for multi-term queries
+- Unit testing
+- Runtime and memory analysis
+- Performance comparison between indexed and non-indexed search
 
-- [.github/workflows/unit-tests.yml](./.github/workflows/unit-tests.yml): script to run tests when pushing to GitHub (CI)
-- [datasets](./datasets/): datasets of documents you can use to test your search engine
-    - [wikipedia12](./datasets/wikipedia12/): a dataset of 13 documents about animals
-    - [wikipedia270](./datasets/wikipedia270/): a dataset of 271 documents about different topics
-    - [wikipedia540](./datasets/wikipedia540/): a dataset of 541 documents about different topics
-    - [wikipedia5400](./datasets/wikipedia5400/): a dataset of 5401 documents about different topics
-- [src](./src/): folder with all `.c` and `.h` files to run your program
-    - [main.c](./src/main.c): entrypoint to your program
-    - [sample_lib.c](./src/sample_lib.c): an example of how to write `.c` files
-    - [sample_lib.h](./src/sample_lib.h): an example of how to write `.h` files
-- [test](./test/): folder with all `.c` and `.h` files to unit test your program
-    - [test.c](./test/test.c): test runner entrypoint
-    - [sample_lib_test.c](./test/sample_lib_test.c): an example of how to write unit tests
-- [Makefile](./Makefile): file defining what `make` commands are used to run the code from the CLI
+## Technical highlights
 
-# Developer Setup
+### Reverse index
 
-## Linux
+A hash-based reverse index maps each keyword to the documents containing it. This avoids scanning every document for each query and improves keyword lookup for larger datasets.
 
-1. Install GCC
-```zsh
-sudo apt update
-sudo apt install build-essential
-sudo apt install gdb
-sudo apt install valgrind
-sudo apt install clang-format
-gcc --version
-```
+### Document graph
 
-2. Create your group repository from the template (instructions in the groups spreadsheet)
+Documents are represented as nodes connected by links. The implementation keeps track of graph relationships and document degrees.
 
-3. [Clone the repository using VSCode](https://code.visualstudio.com/docs/sourcecontrol/intro-to-git#_clone-a-repository-locally)
-   
-5. Run `make r` and make sure you see this message: `Welcome to EDA 2!`
+### Performance analysis
 
-## MacOS
+The project includes experiments comparing search with and without a reverse index, different hash-table sizes, initialization time and search time.
 
-1. [Install homebrew](https://brew.sh/)
+The detailed analysis is available in REPORT.md.
 
-1. [Install GCC](https://formulae.brew.sh/formula/gcc#default)
+## Technologies
 
-2. [Install GDB](https://formulae.brew.sh/formula/gdb#default)
+- C
+- Data structures and algorithms
+- Hash tables
+- Graphs
+- Dynamic memory management
+- File I/O
+- Unit testing
+- Make
+- GCC and GDB
+- Valgrind
+- Clang-format
+- GitHub Actions
 
-3. [Install make](https://formulae.brew.sh/formula/make#default)
+## Repository structure
 
-4. [Install clang-format](https://formulae.brew.sh/formula/clang-format#default)
+- .github/workflows/ — continuous integration
+- datasets/ — document datasets
+- img/ — analysis figures
+- src/ — application source code
+- test/ — unit tests
+- Makefile — build and development commands
+- REPORT.md — design, complexity and performance analysis
 
-5. Create your group repository from the template (instructions in the groups spreadsheet)
+## Build and run
 
-6. [Clone the repository using VSCode](https://code.visualstudio.com/docs/sourcecontrol/intro-to-git#_clone-a-repository-locally)
-   
-8. Run `make r` and make sure you see this message: `Welcome to EDA 2!`
+Run the application:
 
-## Windows
+    make r
 
-1. [Install WSL with Ubuntu](https://documentation.ubuntu.com/wsl/en/latest/guides/install-ubuntu-wsl2/) (Linux subsystem inside Windows)
+Run unit tests:
 
-2. Follow the instructions for [Linux](#linux) in a WSL terminal
+    make t
 
-> [!NOTE]  
-> You could compile and run C code directly on Windows. However, the repository template only works on WSL. Thus, you might need to adapt it for it to work. We recommend using WSL instead to avoid problems.
+Check formatting:
 
-# How to run
+    make f
 
-```zsh
-make r
-```
+Check memory usage:
 
-# How to run unit tests
+    make v
 
-```zsh
-make t
-```
+Debug with GDB:
 
-# How to format the code
+    make d
 
-```zsh
-make f
-```
+Debug the test suite:
 
-# How to use Valgrind to check for memory leaks
+    make dt
 
-```zsh
-make v
-```
+## Continuous integration
 
-# How to run unit tests in GitHub
+GitHub Actions automatically runs the unit-test workflow when changes are pushed to the repository.
 
-When you push to GitHub, your [unit tests will automatically run](.github/workflows/unit-tests.yml). Check out the results and logs in the Actions tab of your repository (in GitHub).
+## Complexity and design analysis
 
-# How to debug
+The accompanying report documents the complexity of document parsing, graph operations, reverse-index lookup and multi-keyword search. It also discusses possible improvements, including a trie-based reverse index.
 
-```zsh
-make d
-```
+## Academic context
 
-You can also use `make dt` to debug the unit tests.
-
-Then, you can:
-- Start the program
-```zsh
-run
-```
-
-- View the stack trace
-```zsh
-backtrace
-```
-
-- Move through the stack trace
-```zsh
-up
-down
-```
-- Print a variable
-```zsh
-print x
-```
-
-# How to remove temporary files
-```zsh
-make c
-```
-
-# How to parse a document?
-
-```c
-Document *document_desserialize(char *path) {
-    FILE *f = fopen(path, "r");
-    assert(f != NULL);
-    
-    Document *document = (Document *)malloc(sizeof(Document));
-    
-    char buffer[262144];
-    int bufferSize = 262144;
-    int bufferIdx = 0;
-    char ch;
-
-    // parse id
-    while ((ch = fgetc(f)) != '\n') {
-        assert(bufferIdx < bufferSize);
-        buffer[bufferIdx++] = ch;
-    }
-    assert(bufferIdx < bufferSize);
-    buffer[bufferIdx++] = '\0';
-    document->id = atoi(buffer);
-
-    // parse title
-    // TODO
-
-    // parse body
-    char linkBuffer[64];
-    int linkBufferSize = 64;
-    int linkBufferIdx = 0;
-    bool parsingLink = false;
-    Links *links = LinksInit();
-    
-    bufferIdx = 0;
-    while ((ch = fgetc(f)) != EOF) {
-        assert(bufferIdx < bufferSize);
-        buffer[bufferIdx++] = ch;
-        if (parsingLink) {
-            if (ch == ')') { // end of link
-                parsingLink = false;
-                assert(linkBufferIdx < linkBufferSize);
-                linkBuffer[linkBufferIdx++] = '\0';
-                int linkId = atoi(linkBuffer);
-
-                // TODO add to links
-
-                linkBufferIdx = 0;
-            } else if (ch != '(') { // skip first parenthesis of the link
-                assert(linkBufferIdx < linkBufferSize);
-                linkBuffer[linkBufferIdx++] = ch;
-            } 
-        } else if (ch == ']') { // found beginning of link id, e.g.: [my link text](123)
-          parsingLink = true;
-        }
-    }
-    assert(bufferIdx < bufferSize);
-    buffer[bufferIdx++] = '\0';
-    
-    char *body = (char *)malloc(sizeof(char) * bufferIdx);
-    strcpy(body, buffer);
-
-    // TODO
-}
-```
+Course: Data Structures and Algorithms II (EDA II)
+Group: P201-31
+Institution: Universitat Pompeu Fabra
